@@ -1,0 +1,234 @@
+CodexImmortal Agentic War Lab
+|
++-- PQC Spine & Vault (CI-001..CI-008)
+|   |
+|   +-- CI-001 PQC-ARCH
+|   |   +-- ML-KEM / ML-DSA keys
+|   |   +-- HNDL exposure mapping
+|   |
+|   +-- CI-002 SHARD-VAULT
+|   |   +-- Shamir secret sharing
+|   |   +-- IPFS / Arweave / Filecoin
+|   |   +-- Merkle tamper detection
+|   |
+|   +-- CI-003 MN-NET-CORE
+|   |   +-- Sentinel / Strategist / Archivist / Executor
+|   |   +-- OODA loop
+|   |   +-- BFT consensus
+|   |
+|   +-- CI-004 NFT-MINT
+|   +-- CI-005 ZK-PROOF
+|   +-- CI-006 KEY-ROTATION
+|   +-- CI-007 STORAGE-POLICY
+|   +-- CI-008 CUSTODY-CHAIN
+|
++-- Governance & Recovery (CI-009..CI-016)
+|   |
+|   +-- CI-009 THREAT-BOARD
+|   |   +-- Shield Score
+|   |   +-- IOC alerts
+|   |
+|   +-- CI-010 RED-TEAM
+|   |   +-- Kill-chain simulation
+|   |   +-- MITRE ATT&CK tags
+|   |
+|   +-- CI-011 LOCKDOWN-LATTICE
+|   +-- CI-012 TRUST-PURGE
+|   +-- CI-013 SOVEREIGN-RESTORE
+|   +-- CI-014 HNDL-TRIAGE
+|   +-- CI-015 AI-PIPELINE
+|   +-- CI-016 OLLAMA-DEPLOY
+|
++-- Mesh, OSINT & DB (CI-017..CI-024)
+|   |
+|   +-- CI-017 LANGRAPH-WARLAB
+|   +-- CI-018 FEDERATED-MESH
+|   |
+|   +-- CI-019 OSINT-FUSION
+|   |   +-- 12-source OSINT adapters
+|   |   +-- ZK-attested records
+|   |
+|   +-- CI-020 KILL-CHAIN-MAP
+|   |
+|   +-- CI-021 SOVEREIGN-DB
+|   |   +-- Document / Vector / Graph / Timeseries / KV
+|   |
+|   +-- CI-022 DASHBOARD-GEN
+|   +-- CI-023 FULL-STACK-ARCH
+|   +-- CI-024 SUPPLY-CHAIN-SEC
+|
++-- Threat Domains (CI-025..CI-034)
+|   |
+|   +-- CI-025 INSIDER-DETECT
+|   +-- CI-026 ICS-SCADA-SEC
+|   +-- CI-027 SPACE-SEC
+|   +-- CI-028 MODEL-POISON-DEF
+|   +-- CI-029 GPU-DISPATCH
+|   +-- CI-030 WALLET-DRIFT
+|   +-- CI-031 GEOINT-FUSION
+|   +-- CI-032 BIO-THREAT
+|   +-- CI-033 FIN-THREAT
+|   +-- CI-034 DISINFO-DETECT
+|
++-- Mesh v2, Epoch & Certs (CI-035..CI-041)
+|   |
+|   +-- CI-035 FEDERATED-MESH-V2
+|   +-- CI-036 CROSS-MESH-FED
+|   |
+|   +-- CI-037 EPOCH-LEDGER
+|   |   +-- Global Merkle root
+|   |   +-- ML-DSA signatures
+|   |
+|   +-- CI-038 MODEL-CHECKPOINT
+|   +-- CI-039 CERT-CHAIN
+|   |
+|   +-- CI-040 WAR-ROOM
+|   |   +-- Live dashboard
+|   |   +-- Proof streams
+|   |
+|   +-- CI-041 THREAT-HUNT
+|       +-- Autonomous hunts
+|       +-- HuntReport NFTs
+|
++-- Next Five Domains & Memory (CI-042..CI-048)
+|   |
+|   +-- CI-042 SWARM-INTEL
+|   |   +-- Autonomous drone swarms
+|   |
+|   +-- CI-043 COG-EW
+|   |   +-- Cognitive electronic warfare
+|   |
+|   +-- CI-044 MULTI-DOMAIN-KILL
+|   |   +-- Cross-domain kill chains
+|   |
+|   +-- CI-045 AGENT-REGISTRY
+|   |   +-- Agent manifests (MCP-aligned)
+|   |
+|   +-- CI-046 SELF-TRAIN-BLUEPRINT
+|   +-- CI-047 MONOREPO-FOUNDATION
+|   |
+|   +-- CI-048 AGE-LATTICE
+|       +-- Memory actions (STORE/RETRIEVE/SUMMARIZE/DISCARD)
+|       +-- Protection metrics (Shield deltas, hunts, breaches)
+|
++-- Orchestrator & Evolution (CI-049..CI-053+)
+    |
+    +-- CI-049 AGE-LATTICE-GOVERNOR
+    |   +-- Memory/protection policy governance
+    |   +-- SOVEREIGN-DB integration
+    |
+    +-- CI-050 ACTION-PROOF-FRACTAL
+    |   +-- ActionProof schema
+    |   +-- Per-action / agent / epoch Merkle proofs
+    |
+    +-- CI-051 FRACTAL-GENETIC-CRYPTOGRAPHY
+    |   +-- Genetic optimization across memory/offense/defense/profit
+    |
+    +-- CI-052 ORGANIZATIONAL-NEURAL-MESH
+    |   +-- Organizational agents
+    |   +-- Subagent spawning and cloning
+    |
+    +-- CI-053 ORGANIZATIONAL-RMPC-FRACTAL
+        +-- RMPC swarm control
+        +-- Merkle-root knowledge graphs
+        +-- Recursive spawn decisions
+{
+  "name": "CodexImmortal Agentic War Lab",
+  "children": [
+    {
+      "name": "Core Spine & Vault",
+      "phase": "core",
+      "children": [
+        { "code": "CI-001", "name": "PQC-ARCH", "phase": "core", "function": "crypto" },
+        { "code": "CI-002", "name": "SHARD-VAULT", "phase": "core", "function": "storage" },
+        { "code": "CI-003", "name": "MN-NET-CORE", "phase": "core", "function": "govern" },
+        { "code": "CI-004", "name": "NFT-MINT", "phase": "core", "function": "crypto" },
+        { "code": "CI-005", "name": "ZK-PROOF", "phase": "core", "function": "crypto" },
+        { "code": "CI-006", "name": "KEY-ROTATION", "phase": "core", "function": "crypto" },
+        { "code": "CI-007", "name": "STORAGE-POLICY", "phase": "core", "function": "storage" },
+        { "code": "CI-008", "name": "CUSTODY-CHAIN", "phase": "core", "function": "govern" }
+      ]
+    },
+    {
+      "name": "Governance & Recovery",
+      "phase": "operational",
+      "children": [
+        { "code": "CI-009", "name": "THREAT-BOARD", "phase": "operational", "function": "observe" },
+        { "code": "CI-010", "name": "RED-TEAM", "phase": "operational", "function": "act" },
+        { "code": "CI-011", "name": "LOCKDOWN-LATTICE", "phase": "operational", "function": "govern" },
+        { "code": "CI-012", "name": "TRUST-PURGE", "phase": "operational", "function": "govern" },
+        { "code": "CI-013", "name": "SOVEREIGN-RESTORE", "phase": "operational", "function": "govern" },
+        { "code": "CI-014", "name": "HNDL-TRIAGE", "phase": "operational", "function": "crypto" },
+        { "code": "CI-015", "name": "AI-PIPELINE", "phase": "operational", "function": "learn" },
+        { "code": "CI-016", "name": "OLLAMA-DEPLOY", "phase": "operational", "function": "tool" }
+      ]
+    },
+    {
+      "name": "Mesh, OSINT & DB",
+      "phase": "operational",
+      "children": [
+        { "code": "CI-017", "name": "LANGRAPH-WARLAB", "phase": "operational", "function": "orient" },
+        { "code": "CI-018", "name": "FEDERATED-MESH", "phase": "operational", "function": "govern" },
+        { "code": "CI-019", "name": "OSINT-FUSION", "phase": "operational", "function": "sense" },
+        { "code": "CI-020", "name": "KILL-CHAIN-MAP", "phase": "operational", "function": "observe" },
+        { "code": "CI-021", "name": "SOVEREIGN-DB", "phase": "operational", "function": "storage" },
+        { "code": "CI-022", "name": "DASHBOARD-GEN", "phase": "operational", "function": "observe" },
+        { "code": "CI-023", "name": "FULL-STACK-ARCH", "phase": "core", "function": "doc" },
+        { "code": "CI-024", "name": "SUPPLY-CHAIN-SEC", "phase": "operational", "function": "sense" }
+      ]
+    },
+    {
+      "name": "Threat Domains",
+      "phase": "operational",
+      "children": [
+        { "code": "CI-025", "name": "INSIDER-DETECT", "phase": "operational", "function": "sense" },
+        { "code": "CI-026", "name": "ICS-SCADA-SEC", "phase": "operational", "function": "defend" },
+        { "code": "CI-027", "name": "SPACE-SEC", "phase": "operational", "function": "defend" },
+        { "code": "CI-028", "name": "MODEL-POISON-DEF", "phase": "operational", "function": "defend" },
+        { "code": "CI-029", "name": "GPU-DISPATCH", "phase": "operational", "function": "act" },
+        { "code": "CI-030", "name": "WALLET-DRIFT", "phase": "operational", "function": "defend" },
+        { "code": "CI-031", "name": "GEOINT-FUSION", "phase": "operational", "function": "sense" },
+        { "code": "CI-032", "name": "BIO-THREAT", "phase": "operational", "function": "sense" },
+        { "code": "CI-033", "name": "FIN-THREAT", "phase": "operational", "function": "sense" },
+        { "code": "CI-034", "name": "DISINFO-DETECT", "phase": "operational", "function": "sense" }
+      ]
+    },
+    {
+      "name": "Mesh v2 & Epoch",
+      "phase": "operational",
+      "children": [
+        { "code": "CI-035", "name": "FEDERATED-MESH-V2", "phase": "operational", "function": "govern" },
+        { "code": "CI-036", "name": "CROSS-MESH-FED", "phase": "operational", "function": "govern" },
+        { "code": "CI-037", "name": "EPOCH-LEDGER", "phase": "core", "function": "crypto" },
+        { "code": "CI-038", "name": "MODEL-CHECKPOINT", "phase": "operational", "function": "learn" },
+        { "code": "CI-039", "name": "CERT-CHAIN", "phase": "operational", "function": "govern" },
+        { "code": "CI-040", "name": "WAR-ROOM", "phase": "operational", "function": "observe" },
+        { "code": "CI-041", "name": "THREAT-HUNT", "phase": "operational", "function": "act" }
+      ]
+    },
+    {
+      "name": "Next Five Domains & Memory",
+      "phase": "evolution",
+      "children": [
+        { "code": "CI-042", "name": "SWARM-INTEL", "phase": "evolution", "function": "act" },
+        { "code": "CI-043", "name": "COG-EW", "phase": "evolution", "function": "sense" },
+        { "code": "CI-044", "name": "MULTI-DOMAIN-KILL", "phase": "evolution", "function": "act" },
+        { "code": "CI-045", "name": "AGENT-REGISTRY", "phase": "evolution", "function": "govern" },
+        { "code": "CI-046", "name": "SELF-TRAIN-BLUEPRINT", "phase": "evolution", "function": "learn" },
+        { "code": "CI-047", "name": "MONOREPO-FOUNDATION", "phase": "core", "function": "doc" },
+        { "code": "CI-048", "name": "AGE-LATTICE", "phase": "evolution", "function": "learn" }
+      ]
+    },
+    {
+      "name": "Orchestrator & Evolution",
+      "phase": "meta",
+      "children": [
+        { "code": "CI-049", "name": "AGE-LATTICE-GOVERNOR", "phase": "meta", "function": "govern" },
+        { "code": "CI-050", "name": "ACTION-PROOF-FRACTAL", "phase": "meta", "function": "crypto" },
+        { "code": "CI-051", "name": "FRACTAL-GENETIC-CRYPTOGRAPHY", "phase": "meta", "function": "learn" },
+        { "code": "CI-052", "name": "ORGANIZATIONAL-NEURAL-MESH", "phase": "meta", "function": "govern" },
+        { "code": "CI-053", "name": "ORGANIZATIONAL-RMPC-FRACTAL", "phase": "meta", "function": "control" }
+      ]
+    }
+  ]
+}
