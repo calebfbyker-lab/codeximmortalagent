@@ -1,0 +1,159 @@
+mindmap
+  root((CodexImmortal Agentic War Lab))
+    %% Core PQC Spine & Vault (core phase)
+    subgraph Core Spine & Vault
+      direction TB
+      CI001[PQC-ARCH
+(core, crypto)]
+      CI002[SHARD-VAULT
+(core, storage)]
+      CI003[MN-NET-CORE
+(core, govern)]
+      CI004[NFT-MINT
+(core, crypto)]
+      CI005[ZK-PROOF
+(core, crypto)]
+      CI006[KEY-ROTATION
+(core, crypto)]
+      CI007[STORAGE-POLICY
+(core, storage)]
+      CI008[CUSTODY-CHAIN
+(core, govern)]
+    end
+    %% Governance & Recovery (operational)
+    subgraph Governance & Recovery
+      direction TB
+      CI009[THREAT-BOARD
+(operational, observe)]
+      CI010[RED-TEAM
+(operational, act)]
+      CI011[LOCKDOWN-LATTICE
+(operational, govern)]
+      CI012[TRUST-PURGE
+(operational, govern)]
+      CI013[SOVEREIGN-RESTORE
+(operational, govern)]
+      CI014[HNDL-TRIAGE
+(operational, crypto)]
+      CI015[AI-PIPELINE
+(operational, learn)]
+      CI016[OLLAMA-DEPLOY
+(operational, tool)]
+    end
+    %% Mesh, OSINT & DB (operational)
+    subgraph Mesh, OSINT & DB
+      direction TB
+      CI017[LANGRAPH-WARLAB
+(operational, orient)]
+      CI018[FEDERATED-MESH
+(operational, govern)]
+      CI019[OSINT-FUSION
+(operational, sense)]
+      CI020[KILL-CHAIN-MAP
+(operational, observe)]
+      CI021[SOVEREIGN-DB
+(operational, storage)]
+      CI022[DASHBOARD-GEN
+(operational, observe)]
+      CI023[FULL-STACK-ARCH
+(core, doc)]
+      CI024[SUPPLY-CHAIN-SEC
+(operational, sense)]
+    end
+    %% Threat Domains (operational)
+    subgraph Threat Domains
+      direction TB
+      CI025[INSIDER-DETECT
+(operational, sense)]
+      CI026[ICS-SCADA-SEC
+(operational, defend)]
+      CI027[SPACE-SEC
+(operational, defend)]
+      CI028[MODEL-POISON-DEF
+(operational, defend)]
+      CI029[GPU-DISPATCH
+(operational, act)]
+      CI030[WALLET-DRIFT
+(operational, defend)]
+      CI031[GEOINT-FUSION
+(operational, sense)]
+      CI032[BIO-THREAT
+(operational, sense)]
+      CI033[FIN-THREAT
+(operational, sense)]
+      CI034[DISINFO-DETECT
+(operational, sense)]
+    end
+    %% Mesh v2, Epoch, Certs, War Room, Hunts (operational)
+    subgraph Mesh v2 & Epoch
+      direction TB
+      CI035[FEDERATED-MESH-V2
+(operational, govern)]
+      CI036[CROSS-MESH-FED
+(operational, govern)]
+      CI037[EPOCH-LEDGER
+(core, crypto)]
+      CI038[MODEL-CHECKPOINT
+(operational, learn)]
+      CI039[CERT-CHAIN
+(operational, govern)]
+      CI040[WAR-ROOM
+(operational, observe)]
+      CI041[THREAT-HUNT
+(operational, act)]
+    end
+    %% Next Five Domains & Memory (evolution)
+    subgraph Next Five Domains & Memory
+      direction TB
+      CI042[SWARM-INTEL
+(evolution, act)]
+      CI043[COG-EW
+(evolution, sense)]
+      CI044[MULTI-DOMAIN-KILL
+(evolution, act)]
+      CI045[AGENT-REGISTRY
+(evolution, govern)]
+      CI046[SELF-TRAIN-BLUEPRINT
+(evolution, learn)]
+      CI047[MONOREPO-FOUNDATION
+(core, doc)]
+      CI048[AGE-LATTICE
+(evolution, learn)]
+    end
+    %% Orchestrator, Fractal Genetic Cryptography, Spawn Control (meta)
+    subgraph Orchestrator & Evolution
+      direction TB
+      CI049[AGE-LATTICE-GOVERNOR
+(meta, govern)]
+      CI050[ACTION-PROOF-FRACTAL
+(meta, crypto)]
+      CI051[FRACTAL-GENETIC-CRYPTOGRAPHY
+(meta, learn)]
+      CI052[ORGANIZATIONAL-NEURAL-MESH
+(meta, govern)]
+      CI053[ORGANIZATIONAL-RMPC-FRACTAL
+(meta, control)]
+    end
+
+    %% Critical interdependencies (edges)
+    Core Spine & Vault --> Governance & Recovery
+    Core Spine & Vault --> Mesh, OSINT & DB
+    Mesh, OSINT & DB --> Threat Domains
+    Mesh, OSINT & DB --> Mesh v2 & Epoch
+    Mesh v2 & Epoch --> Next Five Domains & Memory
+    Next Five Domains & Memory --> Orchestrator & Evolution
+
+    CI001 --> CI002
+    CI001 --> CI006
+    CI002 --> CI021
+    CI019 --> CI041
+    CI019 --> CI040
+    CI021 --> CI019
+    CI021 --> CI048
+    CI037 --> CI048
+    CI041 --> CI048
+    CI048 --> CI049
+    CI049 --> CI050
+    CI050 --> CI051
+    CI051 --> CI052
+    CI052 --> CI053
