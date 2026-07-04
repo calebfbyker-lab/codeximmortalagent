@@ -3,11 +3,11 @@
 # FILE: apps/api_gateway/backend/requirements.txt
 # MODULE: API-GATEWAY-DEPENDENCIES
 # LAYER: DATA
-# PURPOSE: Python dependency manifest for the backend API gateway and validation/test stack
+# PURPOSE: Python dependency manifest for the backend API gateway, telemetry, schema validation, and tests
 # DEPENDS_ON: none
-# EXPOSES: install surface for FastAPI backend, schema validation, and tests
+# EXPOSES: install surface for FastAPI backend, registry validation, telemetry, and route/unit tests
 # CRYPTO_PROVENANCE: n/a
-# VERSION: v1
+# VERSION: v2
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
