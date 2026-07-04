@@ -3,11 +3,11 @@
 # FILE: apps/api_gateway/backend/main.py
 # MODULE: API-ENTRYPOINT-REGISTRY-WIRING
 # LAYER: DATA
-# PURPOSE: Backend API entrypoint with validated registry bootstrap, runtime state exposure, and startup telemetry emission
+# PURPOSE: Backend API entrypoint with validated registry bootstrap, runtime state exposure, startup telemetry emission, and health telemetry reflection
 # DEPENDS_ON: apps/api_gateway/backend/app_state.py, apps/api_gateway/backend/ci_registry.json, apps/api_gateway/backend/startup_telemetry.py, libs/core/ci_registry_schema.py
 # EXPOSES: app
 # CRYPTO_PROVENANCE: unsigned runtime entrypoint utility
-# VERSION: v2
+# VERSION: v3
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
@@ -20,7 +20,7 @@ from fastapi import FastAPI, HTTPException, Request
 
 from app_state import AppState, bootstrap_registry_state
 from core.ci_registry_schema import CiModule, find_by_code
-from startup_telemetry import telemetry_json
+from startup_telemetry import build_startup_telemetry, telemetry_json
 
 
 REGISTRY_PATH = Path(__file__).with_name("ci_registry.json")
@@ -47,11 +47,7 @@ def get_app_state(request: Request) -> AppState:
 @app.get("/health")
 def health(request: Request) -> dict:
     state = get_app_state(request)
-    return {
-        "status": "ok",
-        "registry_path": str(state.registry_path),
-        "registry_module_count": state.registry_module_count,
-    }
+    return build_startup_telemetry(state).__dict__
 
 
 @app.get("/api/modules")
