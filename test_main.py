@@ -3,22 +3,30 @@
 # FILE: apps/api_gateway/backend/tests/test_main.py
 # MODULE: API-ROUTE-TEST-HARNESS
 # LAYER: DATA
-# PURPOSE: API tests for validated registry startup, health reporting, module listing, and module detail lookup
-# DEPENDS_ON: apps/api_gateway/backend/main.py, apps/api_gateway/backend/ci_registry.json
+# PURPOSE: Dynamic API tests for validated registry startup, health reporting, module listing, and module detail lookup
+# DEPENDS_ON: apps/api_gateway/backend/main.py, apps/api_gateway/backend/validate_ci_registry.py, apps/api_gateway/backend/ci_registry.json
 # EXPOSES: pytest coverage for /health, /api/modules, /api/modules/{code}
 # CRYPTO_PROVENANCE: n/a
-# VERSION: v1
+# VERSION: v2
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 from main import app
+from validate_ci_registry import load_validated_registry
 
 
 client = TestClient(app)
+registry_path = Path(__file__).resolve().parent.parent / "ci_registry.json"
+registry = load_validated_registry(registry_path)
+expected_modules = registry.modules
+expected_module_count = len(expected_modules)
+expected_ci_041 = next(module for module in expected_modules if module.code == "CI-041")
 
 
 def test_health_reports_ok_and_registry_metadata() -> None:
@@ -28,7 +36,7 @@ def test_health_reports_ok_and_registry_metadata() -> None:
     payload = response.json()
     assert payload["status"] == "ok"
     assert payload["registry_path"].endswith("ci_registry.json")
-    assert payload["registry_module_count"] == 53
+    assert payload["registry_module_count"] == expected_module_count
 
 
 def test_list_modules_returns_full_registry() -> None:
@@ -37,19 +45,19 @@ def test_list_modules_returns_full_registry() -> None:
 
     payload = response.json()
     assert isinstance(payload, list)
-    assert len(payload) == 53
-    assert payload[0]["code"] == "CI-001"
-    assert payload[-1]["code"] == "CI-053"
+    assert len(payload) == expected_module_count
+    assert payload[0]["code"] == expected_modules[0].code
+    assert payload[-1]["code"] == expected_modules[-1].code
 
 
 def test_get_module_returns_specific_module() -> None:
-    response = client.get("/api/modules/CI-041")
+    response = client.get(f"/api/modules/{expected_ci_041.code}")
     assert response.status_code == 200
 
     payload = response.json()
-    assert payload["code"] == "CI-041"
-    assert payload["name"] == "THREAT-HUNT"
-    assert payload["agentic_function"] == "act"
+    assert payload["code"] == expected_ci_041.code
+    assert payload["name"] == expected_ci_041.name
+    assert payload["agentic_function"] == expected_ci_041.agentic_function
 
 
 def test_get_module_returns_404_for_missing_code() -> None:
