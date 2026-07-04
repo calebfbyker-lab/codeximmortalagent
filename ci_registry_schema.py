@@ -1,0 +1,173 @@
+# ============================================================
+# CODEXIMMORTAL WARLAB — FILE METADATA HEADER
+# FILE: libs/core/ci_registry_schema.py
+# MODULE: CI-REGISTRY-SCHEMA
+# LAYER: PQC-SPINE
+# PURPOSE: Typed Pydantic schema and helper accessors for CI-001 through CI-053 registry records
+# DEPENDS_ON: none
+# EXPOSES: CiModule, CiRegistry, FractalGeneticRequirements, load_registry, find_by_code, filter_by_phase, filter_by_function
+# CRYPTO_PROVENANCE: unsigned runtime schema for ML-DSA / Merkle / ZK-linked module metadata
+# VERSION: v1
+# TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
+# ============================================================
+
+from __future__ import annotations
+
+import re
+from enum import Enum
+from typing import Annotated, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+CI_CODE_PATTERN = re.compile(r"^CI-d{3}$")
+
+
+class SecurityClass(str, Enum):
+    UNCLASSIFIED = "UNCLASSIFIED"
+    SECRET = "SECRET"
+    TS_SCI = "TS_SCI"
+
+
+class EvolutionStage(str, Enum):
+    core = "core"
+    operational = "operational"
+    evolution = "evolution"
+    meta = "meta"
+
+
+class AgenticFunction(str, Enum):
+    crypto = "crypto"
+    storage = "storage"
+    govern = "govern"
+    sense = "sense"
+    observe = "observe"
+    orient = "orient"
+    decide = "decide"
+    act = "act"
+    learn = "learn"
+    defend = "defend"
+    control = "control"
+    tool = "tool"
+    doc = "doc"
+
+
+class RmpcRole(str, Enum):
+    state = "state"
+    control = "control"
+    tool = "tool"
+    none = "none"
+
+
+class FractalGeneticRequirements(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    signing: Literal["ML-DSA"]
+    root_level: Literal["agent", "mesh", "epoch"]
+    merkle_required: bool = True
+    zk_required: bool = False
+
+
+CiCode = Annotated[str, Field(pattern=r"^CI-d{3}$")]
+NonEmptyString = Annotated[str, Field(min_length=1)]
+TagList = Annotated[list[str], Field(min_length=1)]
+DependencyList = Annotated[list[CiCode], Field(default_factory=list)]
+
+
+class CiModule(BaseModel):
+    model_config = ConfigDict(extra="forbid", use_enum_values=True)
+
+    code: CiCode
+    name: NonEmptyString
+    description: NonEmptyString
+    layer: NonEmptyString
+    evolution_stage: EvolutionStage
+    agentic_function: AgenticFunction
+    security_class: SecurityClass
+    dependencies: DependencyList = Field(default_factory=list)
+    fractal_genetic_requirements: FractalGeneticRequirements
+    rmpc_role: RmpcRole
+    tags: TagList
+
+    @field_validator("code")
+    @classmethod
+    def validate_code(cls, value: str) -> str:
+        if not CI_CODE_PATTERN.fullmatch(value):
+            raise ValueError("code must match CI-000 format")
+        return value
+
+    @field_validator("dependencies")
+    @classmethod
+    def validate_dependencies(cls, deps: list[str]) -> list[str]:
+        seen: set[str] = set()
+        for dep in deps:
+            if not CI_CODE_PATTERN.fullmatch(dep):
+                raise ValueError(f"invalid dependency code: {dep}")
+            if dep in seen:
+                raise ValueError(f"duplicate dependency: {dep}")
+            seen.add(dep)
+        return deps
+
+    @field_validator("tags")
+    @classmethod
+    def validate_tags(cls, tags: list[str]) -> list[str]:
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for tag in tags:
+            cleaned = tag.strip().lower().replace(" ", "-")
+            if not cleaned:
+                raise ValueError("tags cannot contain empty values")
+            if cleaned in seen:
+                raise ValueError(f"duplicate tag: {cleaned}")
+            seen.add(cleaned)
+            normalized.append(cleaned)
+        return normalized
+
+    @model_validator(mode="after")
+    def validate_self_dependency(self) -> "CiModule":
+        if self.code in self.dependencies:
+            raise ValueError(f"module {self.code} cannot depend on itself")
+        return self
+
+
+class CiRegistry(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    modules: Annotated[list[CiModule], Field(min_length=1)]
+
+    @model_validator(mode="after")
+    def validate_unique_codes_and_references(self) -> "CiRegistry":
+        codes = [module.code for module in self.modules]
+        if len(codes) != len(set(codes)):
+            duplicates = sorted({code for code in codes if codes.count(code) > 1})
+            raise ValueError(f"duplicate module codes: {duplicates}")
+
+        code_set = set(codes)
+        missing: dict[str, list[str]] = {}
+        for module in self.modules:
+            unresolved = [dep for dep in module.dependencies if dep not in code_set]
+            if unresolved:
+                missing[module.code] = unresolved
+
+        if missing:
+            raise ValueError(f"unresolved dependencies: {missing}")
+
+        return self
+
+
+def load_registry(data: list[dict]) -> CiRegistry:
+    return CiRegistry(modules=data)
+
+
+def find_by_code(registry: CiRegistry, code: str) -> CiModule | None:
+    for module in registry.modules:
+        if module.code == code:
+            return module
+    return None
+
+
+def filter_by_phase(registry: CiRegistry, phase: str) -> list[CiModule]:
+    return [module for module in registry.modules if module.evolution_stage == phase]
+
+
+def filter_by_function(registry: CiRegistry, function_name: str) -> list[CiModule]:
+    return [module for module in registry.modules if module.agentic_function == function_name]
