@@ -1,0 +1,65 @@
+# ============================================================
+# CODEXIMMORTAL WARLAB — FILE METADATA HEADER
+# FILE: pyproject.toml
+# MODULE: ROOT-WORKSPACE
+# LAYER: INFRA
+# PURPOSE: Root Python workspace configuration declaring all libs and apps as workspace members
+# DEPENDS_ON: none
+# EXPOSES: workspace dependency graph, shared dev tooling config (ruff, pytest)
+# CRYPTO_PROVENANCE: n/a
+# VERSION: v1
+# TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
+# ============================================================
+
+[tool.poetry]
+name = "codeximmortal-war-lab"
+version = "0.1.0"
+description = "CodexImmortal Agentic War Lab - PQC, Agentic Cloning, Fractal Genetic Cryptography Orchestration"
+authors = ["Caleb Fedor Byker Konev <caleb@codeximmortal.com>"]
+license = "Proprietary"
+readme = "README.md"
+packages = [
+    { include = "core", from = "libs/core" },
+    { include = "age_lattice", from = "libs/age_lattice" },
+    { include = "orchestrator", from = "libs/orchestrator" },
+    { include = "knowledge_graph", from = "libs/knowledge_graph" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = { extras = ["standard"], version = "^0.32.0" }
+pydantic = "^2.9.0"
+pydantic-settings = "^2.5.0"
+python-multipart = "^0.0.12"
+websockets = "^13.1"
+neo4j = "^5.25.0"
+aiohttp = "^3.10.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+httpx = "^0.27.0"
+ruff = "^0.7.0"
+mypy = "^1.11.0"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["libs", "apps/api_gateway/backend"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["libs", "apps/api_gateway/backend/tests", "tests"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+exclude = ["tests/"]
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
