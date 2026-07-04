@@ -1,0 +1,10 @@
+docs/
+├── CODEXIMMORTAL.md          # (duplicate/root-linked, or root is canonical)
+├── AGENTS.md
+└── ci_modules/
+    ├── ci_modules.md          # (already generated)
+    └── ci_modules.txt
+
+scripts/
+├── launcher.py                # dev launcher: runs backend + dashboard
+└── dev_run_all.sh
