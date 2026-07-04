@@ -3,11 +3,11 @@
 # FILE: apps/api_gateway/backend/tests/test_startup_telemetry.py
 # MODULE: STARTUP-TELEMETRY-TEST-COVERAGE
 # LAYER: DATA
-# PURPOSE: Verify startup telemetry JSON emission during FastAPI lifespan boot
+# PURPOSE: Verify schema-versioned startup telemetry JSON emission during FastAPI lifespan boot
 # DEPENDS_ON: apps/api_gateway/backend/main.py, apps/api_gateway/backend/startup_telemetry.py, apps/api_gateway/backend/ci_registry.json
 # EXPOSES: pytest coverage for boot-time telemetry manifest shape and values
 # CRYPTO_PROVENANCE: n/a
-# VERSION: v1
+# VERSION: v2
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
@@ -19,6 +19,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from main import app
+from startup_telemetry import STARTUP_TELEMETRY_SCHEMA_VERSION
 from validate_ci_registry import load_validated_registry
 
 
@@ -34,6 +35,7 @@ def test_startup_emits_structured_telemetry(capsys) -> None:
     captured = capsys.readouterr()
     telemetry = json.loads(captured.out)
 
+    assert telemetry["schema_version"] == STARTUP_TELEMETRY_SCHEMA_VERSION
     assert telemetry["status"] == "ok"
     assert telemetry["registry_path"].endswith("ci_registry.json")
     assert telemetry["registry_module_count"] == len(registry.modules)
