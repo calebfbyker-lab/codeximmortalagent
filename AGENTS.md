@@ -159,23 +159,3 @@ modules = [{
 
 registry = load_registry(modules)
 assert registry.modules.layer == "PQC-SPINE"
-
-## Placement
-
-Save this as `AGENTS.md` at the repository root beside `README.md` and `CODEXIMMORTAL.md`. It acts as the governance contract for future file generation and agent behavior across the monorepo. 
-
-[CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
-
---------------------------------------------------
-CODEX EVOLUTION PROPOSAL
-Proposed By: STRATEGIST-PRIME
-CAPABILITY: Agent Policy Enforcement Layer
-LAYER: ORCHESTRATOR
-TRIGGER: Governance rules now exist in documentation, but they are not yet machine-enforced during file generation or code review.
-DESCRIPTION: Add a lightweight policy checker that validates required file headers, declared dependency order, and forbidden secret patterns before commits or generated outputs are accepted. This turns `AGENTS.md` from static guidance into an enforceable build discipline layer.
-IMPLEMENTATION:
-  Phase 1 [AUTOMATED]: Create a script that scans files for required header fields and forbidden patterns.
-  Phase 2 [HUMAN GATE]: Review exception cases for generated files, vendor assets, and third-party examples.
-  Phase 3 [AUDIT STAMP]: Anchor policy-check results and manifest hashes into the provenance ledger.
-PAYOFF DELTA: Shield Score +2 | Vault Shards +160 | Neural Peers +20
---------------------------------------------------
