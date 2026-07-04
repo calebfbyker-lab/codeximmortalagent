@@ -1,0 +1,24 @@
+codeximmortal-war-lab/
+├── README.md
+├── CODEXIMMORTAL.md
+├── AGENTS.md
+├── LICENSE
+├── .gitignore
+├── pyproject.toml
+├── Makefile
+├── apps/
+│   ├── api_gateway/
+│   └── dashboard/
+├── libs/
+│   ├── core/
+│   ├── age_lattice/
+│   ├── orchestrator/
+│   └── knowledge_graph/
+├── infra/
+│   ├── nginx/
+│   ├── docker/
+│   └── db/
+├── docs/
+│   └── ci_modules/
+├── scripts/
+└── tests/
