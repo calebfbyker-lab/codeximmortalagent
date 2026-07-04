@@ -1,0 +1,8 @@
+libs/age_lattice/
+├── __init__.py
+├── pyproject.toml
+├── memory_actions.py      # MemoryAction enum, MemoryPolicy model
+├── metrics.py             # ProtectionMetrics model
+├── policy_engine.py       # should_store/should_discard/summarize logic
+└── tests/
+    └── test_policy_engine.py
