@@ -1,0 +1,11 @@
+libs/core/
+├── __init__.py
+├── pyproject.toml
+├── pqc_arch.py            # CI-001: ML-KEM/ML-DSA keypair lifecycle
+├── zk_proof.py            # CI-005: ZK circuit wrappers
+├── action_proof.py        # CI-050: ActionProof schema + create/verify
+├── ci_registry_schema.py  # CiModule, FractalGeneticRequirements models
+└── tests/
+    ├── test_pqc_arch.py
+    ├── test_action_proof.py
+    └── test_ci_registry_schema.py
