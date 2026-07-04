@@ -1,0 +1,172 @@
+{
+  "tag": "[CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]",
+  "version": "v1",
+  "generated_at": "2026-07-04T09:20:00-04:00",
+  "summary": {
+    "total_manifest_groups": 10,
+    "completed_groups": 2,
+    "partial_groups": 4,
+    "pending_groups": 4,
+    "recommended_next_group": "D",
+    "recommended_next_files": [
+      "libs/age_lattice/memory_actions.py",
+      "libs/age_lattice/metrics.py",
+      "libs/age_lattice/policy_engine.py",
+      "libs/age_lattice/tests/test_policy_engine.py"
+    ]
+  },
+  "groups": [
+    {
+      "group": "A",
+      "scope": "Root config/docs",
+      "status": "partial",
+      "notes": "Master manifest exists, but root workspace and operator docs remain unfinished."
+    },
+    {
+      "group": "B",
+      "scope": "libs/core",
+      "status": "complete",
+      "notes": "Core schema, PQC, ZK, action proof, and tests are implemented."
+    },
+    {
+      "group": "C",
+      "scope": "backend registry JSON",
+      "status": "complete",
+      "notes": "Registry JSON exists and is validated by backend startup tooling."
+    },
+    {
+      "group": "D",
+      "scope": "libs/age_lattice",
+      "status": "pending",
+      "notes": "Memory governance layer not yet implemented."
+    },
+    {
+      "group": "E",
+      "scope": "libs/knowledge_graph",
+      "status": "pending",
+      "notes": "Graph models, Merkle index, and storage wrapper not yet implemented."
+    },
+    {
+      "group": "F",
+      "scope": "libs/orchestrator",
+      "status": "pending",
+      "notes": "Agent genome, optimizer, RMPC, and organizational agent are pending."
+    },
+    {
+      "group": "G",
+      "scope": "backend wiring",
+      "status": "partial",
+      "notes": "Simplified main entrypoint and telemetry routes exist, but split adapters/routes are pending."
+    },
+    {
+      "group": "H",
+      "scope": "frontend app",
+      "status": "partial",
+      "notes": "Vite React shell and dashboard UI exist, but API abstraction and component decomposition are pending."
+    },
+    {
+      "group": "I",
+      "scope": "infra",
+      "status": "pending",
+      "notes": "Docker, SQL schema, migrations, and NGINX are not yet implemented."
+    },
+    {
+      "group": "J",
+      "scope": "scripts/docs/integration",
+      "status": "partial",
+      "notes": "Master manifest exists, but launch scripts and end-to-end integration tests are pending."
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/file_manifest.md",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "Canonical blueprint and progress map established."
+    },
+    {
+      "path": "libs/core/ci_registry_schema.py",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "Schema and helper surface available."
+    },
+    {
+      "path": "libs/core/pqc_arch.py",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "PQC support scaffold available."
+    },
+    {
+      "path": "libs/core/zk_proof.py",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "ZK abstraction stub available."
+    },
+    {
+      "path": "libs/core/action_proof.py",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "Proof model and provider wiring implemented."
+    },
+    {
+      "path": "apps/api_gateway/backend/ci_registry.json",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "Validated module registry present."
+    },
+    {
+      "path": "apps/api_gateway/backend/main.py",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "FastAPI entrypoint with health and module endpoints present."
+    },
+    {
+      "path": "apps/api_gateway/backend/startup_telemetry.py",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "Schema-versioned startup telemetry implemented."
+    },
+    {
+      "path": "apps/frontend/src/App.tsx",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "Dashboard shell with registry fetch and filtering exists."
+    },
+    {
+      "path": "apps/frontend/src/styles.css",
+      "status": "complete",
+      "dependency_ready": true,
+      "notes": "Initial frontend visual layer implemented."
+    },
+    {
+      "path": "libs/age_lattice/memory_actions.py",
+      "status": "pending",
+      "dependency_ready": true,
+      "notes": "Recommended next file."
+    },
+    {
+      "path": "libs/age_lattice/metrics.py",
+      "status": "pending",
+      "dependency_ready": false,
+      "notes": "Depends on memory actions model choices."
+    },
+    {
+      "path": "libs/age_lattice/policy_engine.py",
+      "status": "pending",
+      "dependency_ready": false,
+      "notes": "Depends on age lattice models."
+    },
+    {
+      "path": "libs/orchestrator/rmpc_controller.py",
+      "status": "pending",
+      "dependency_ready": false,
+      "notes": "Blocked by agent genome and optimizer layers."
+    },
+    {
+      "path": "infra/docker/docker-compose.yml",
+      "status": "pending",
+      "dependency_ready": false,
+      "notes": "Blocked by backend/frontend/infra stabilization."
+    }
+  ]
+}
