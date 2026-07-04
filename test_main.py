@@ -3,11 +3,11 @@
 # FILE: apps/api_gateway/backend/tests/test_main.py
 # MODULE: API-ROUTE-TEST-HARNESS
 # LAYER: DATA
-# PURPOSE: Dynamic API tests for validated registry startup, health reporting, module listing, and module detail lookup
+# PURPOSE: Dynamic API tests for validated registry startup, telemetry-backed health reporting, module listing, and module detail lookup
 # DEPENDS_ON: apps/api_gateway/backend/main.py, apps/api_gateway/backend/validate_ci_registry.py, apps/api_gateway/backend/ci_registry.json
 # EXPOSES: pytest coverage for /health, /api/modules, /api/modules/{code}
 # CRYPTO_PROVENANCE: n/a
-# VERSION: v2
+# VERSION: v3
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
@@ -29,7 +29,7 @@ expected_module_count = len(expected_modules)
 expected_ci_041 = next(module for module in expected_modules if module.code == "CI-041")
 
 
-def test_health_reports_ok_and_registry_metadata() -> None:
+def test_health_reports_telemetry_contract() -> None:
     response = client.get("/health")
     assert response.status_code == 200
 
@@ -37,6 +37,7 @@ def test_health_reports_ok_and_registry_metadata() -> None:
     assert payload["status"] == "ok"
     assert payload["registry_path"].endswith("ci_registry.json")
     assert payload["registry_module_count"] == expected_module_count
+    assert payload["validated_at"]
 
 
 def test_list_modules_returns_full_registry() -> None:
