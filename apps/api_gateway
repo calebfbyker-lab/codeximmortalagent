@@ -1,0 +1,19 @@
+apps/api_gateway/
+├── pyproject.toml
+├── backend/
+│   ├── __init__.py
+│   ├── main.py                    # FastAPI app entrypoint
+│   ├── connection_manager.py      # WebSocket connection pooling
+│   ├── ci_registry.json           # Machine-readable CI module data
+│   ├── age_lattice_adapter.py     # CI-048 endpoints
+│   ├── orchestrator_rmpc.py       # CI-053 RMPC endpoints
+│   ├── knowledge_graph_api.py     # Knowledge graph endpoints
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── modules.py             # /api/modules routes
+│   │   ├── memory.py              # /api/memory routes
+│   │   ├── rmpc.py                # /api/rmpc routes
+│   │   └── graph.py               # /api/graph routes
+│   └── config.py                  # Settings (env vars, ports)
+└── tests/
+    └── test_main.py
