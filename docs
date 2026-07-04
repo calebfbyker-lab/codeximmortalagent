@@ -1,10 +1,117 @@
-docs/
-├── CODEXIMMORTAL.md          # (duplicate/root-linked, or root is canonical)
+codeximmortal-war-lab/
+├── README.md
+├── CODEXIMMORTAL.md
 ├── AGENTS.md
-└── ci_modules/
-    ├── ci_modules.md          # (already generated)
-    └── ci_modules.txt
-
-scripts/
-├── launcher.py                # dev launcher: runs backend + dashboard
-└── dev_run_all.sh
+├── LICENSE
+├── .gitignore
+├── pyproject.toml
+├── Makefile
+│
+├── apps/
+│   ├── api_gateway/
+│   │   ├── pyproject.toml
+│   │   ├── backend/
+│   │   │   ├── __init__.py
+│   │   │   ├── main.py
+│   │   │   ├── config.py
+│   │   │   ├── connection_manager.py
+│   │   │   ├── ci_registry.json
+│   │   │   ├── age_lattice_adapter.py
+│   │   │   ├── orchestrator_rmpc.py
+│   │   │   ├── knowledge_graph_api.py
+│   │   │   └── routes/
+│   │   │       ├── __init__.py
+│   │   │       ├── modules.py
+│   │   │       ├── memory.py
+│   │   │       ├── rmpc.py
+│   │   │       └── graph.py
+│   │   └── tests/
+│   │       └── test_main.py
+│   │
+│   └── dashboard/
+│       ├── package.json
+│       ├── vite.config.ts
+│       ├── public/
+│       │   └── index.html
+│       └── src/
+│           ├── App.tsx
+│           ├── main.tsx
+│           ├── api/
+│           │   └── client.ts
+│           ├── components/
+│           │   ├── WarRoomPanel.tsx
+│           │   ├── ModuleRegistryTable.tsx
+│           │   ├── MindMapView.tsx
+│           │   └── RmpcStatusPanel.tsx
+│           └── styles/
+│               └── theme.css
+│
+├── libs/
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── pyproject.toml
+│   │   ├── pqc_arch.py
+│   │   ├── zk_proof.py
+│   │   ├── action_proof.py
+│   │   ├── ci_registry_schema.py
+│   │   └── tests/
+│   │       ├── test_pqc_arch.py
+│   │       ├── test_action_proof.py
+│   │       └── test_ci_registry_schema.py
+│   │
+│   ├── age_lattice/
+│   │   ├── __init__.py
+│   │   ├── pyproject.toml
+│   │   ├── memory_actions.py
+│   │   ├── metrics.py
+│   │   ├── policy_engine.py
+│   │   └── tests/
+│   │       └── test_policy_engine.py
+│   │
+│   ├── orchestrator/
+│   │   ├── __init__.py
+│   │   ├── pyproject.toml
+│   │   ├── agent_genome.py
+│   │   ├── rmpc_controller.py
+│   │   ├── genetic_optimizer.py
+│   │   ├── organizational_agent.py
+│   │   └── tests/
+│   │       ├── test_agent_genome.py
+│   │       ├── test_rmpc_controller.py
+│   │       └── test_genetic_optimizer.py
+│   │
+│   └── knowledge_graph/
+│       ├── __init__.py
+│       ├── pyproject.toml
+│       ├── models.py
+│       ├── storage_neo4j.py
+│       ├── merkle_index.py
+│       └── tests/
+│           └── test_merkle_index.py
+│
+├── infra/
+│   ├── nginx/
+│   │   └── nginx.conf
+│   ├── docker/
+│   │   ├── Dockerfile.backend
+│   │   ├── Dockerfile.dashboard
+│   │   ├── Dockerfile.nginx
+│   │   └── docker-compose.yml
+│   └── db/
+│       ├── schema.sql
+│       └── migrations/
+│           └── 0001_init.sql
+│
+├── docs/
+│   ├── ci_modules/
+│   │   ├── ci_modules.md
+│   │   └── ci_modules.txt
+│   └── file_manifest.md
+│
+├── scripts/
+│   ├── launcher.py
+│   └── dev_run_all.sh
+│
+└── tests/
+    └── integration/
+        └── test_full_stack.py
