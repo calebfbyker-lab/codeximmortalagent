@@ -1,0 +1,8 @@
+libs/knowledge_graph/
+├── __init__.py
+├── pyproject.toml
+├── models.py               # Node, Edge Pydantic models
+├── storage_neo4j.py        # Neo4j driver wrapper (or in-memory fallback)
+├── merkle_index.py         # Merkle tree build/verify over graph
+└── tests/
+    └── test_merkle_index.py
