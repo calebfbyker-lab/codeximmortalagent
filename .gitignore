@@ -1,0 +1,92 @@
+# ============================================================
+# CODEXIMMORTAL WARLAB — FILE METADATA HEADER
+# FILE: .gitignore
+# MODULE: ROOT-WORKSPACE
+# LAYER: INFRA
+# PURPOSE: Exclude build artifacts, secrets, envs, and local state from version control
+# DEPENDS_ON: none
+# EXPOSES: none
+# CRYPTO_PROVENANCE: n/a
+# VERSION: v1
+# TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
+# ============================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.tox/
+
+# --- Poetry / dependency locks (keep lock, ignore local caches) ---
+.python-version
+
+# --- Node / frontend (if dashboards use JS tooling) ---
+node_modules/
+dist/
+.next/
+.turbo/
+
+# --- Environment & secrets (CRITICAL — never commit keys/shards) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+vault/local/
+shards/local/
+*.ml_kem
+*.ml_dsa
+*.slh_dsa
+
+# --- Sovereign DB local state ---
+*.db
+*.sqlite3
+neo4j_data/
+qdrant_data/
+influxdb_data/
+redis_data/
+mongo_data/
+
+# --- IPFS / Arweave / Filecoin local caches ---
+.ipfs/
+ipfs_staging/
+arweave_cache/
+
+# --- NFT / ZK build artifacts ---
+*.zkey
+*.wasm
+*.r1cs
+circuits/build/
+ptau/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# --- Logs & telemetry ---
+*.log
+logs/
+otel_data/
+
+# --- Test / coverage output ---
+coverage.xml
+.coverage.*
+
+# --- CodexImmortal generated artifacts (regenerable, not source) ---
+output/tmp/
+*.generated.json
