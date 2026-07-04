@@ -1,0 +1,12 @@
+infra/
+├── nginx/
+│   └── nginx.conf
+├── docker/
+│   ├── Dockerfile.backend
+│   ├── Dockerfile.dashboard
+│   ├── Dockerfile.nginx
+│   └── docker-compose.yml
+└── db/
+    ├── schema.sql
+    └── migrations/
+        └── 0001_init.sql
