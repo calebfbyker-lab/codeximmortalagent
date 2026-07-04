@@ -7,7 +7,7 @@
 # DEPENDS_ON: libs/core/pqc_arch.py, libs/core/zk_proof.py
 # EXPOSES: ActionProof, SigningProvider, MockSigningProvider, create_proof, verify_proof
 # CRYPTO_PROVENANCE: unsigned development stub; interface designed for ML-DSA signing and ZK-linked action attestations
-# VERSION: v2
+# VERSION: v3
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
@@ -21,7 +21,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ConfigDict, Field
 
 from core.pqc_arch import KeyPair
-from core.zk_proof import ZkCircuit, ZkProof, create_zk_proof, verify_zk_proof
+from core.zk_proof import ZkBackend, ZkCircuit, ZkProof, create_zk_proof, verify_zk_proof
 
 
 class ActionProof(BaseModel):
@@ -75,6 +75,7 @@ def create_proof(
     *,
     metadata: dict[str, Any] | None = None,
     signing_provider: SigningProvider | None = None,
+    zk_backend: ZkBackend | None = None,
 ) -> ActionProof:
     now = datetime.now(UTC)
     provider = signing_provider or DEFAULT_SIGNING_PROVIDER
@@ -95,6 +96,7 @@ def create_proof(
         },
         signer=signer,
         metadata={"proof_kind": "action", "signing_provider": provider.name, **(metadata or {})},
+        backend=zk_backend,
     )
 
     return ActionProof(
@@ -118,6 +120,7 @@ def verify_proof(
     expected_actor_id: str | None = None,
     expected_action_type: str | None = None,
     signing_provider: SigningProvider | None = None,
+    zk_backend: ZkBackend | None = None,
 ) -> bool:
     provider = signing_provider or DEFAULT_SIGNING_PROVIDER
     computed_payload_hash = _stable_hash(payload)
@@ -146,4 +149,5 @@ def verify_proof(
         },
         expected_circuit=ZkCircuit.CIRC_003_ACTION_PROOF,
         expected_signer_key_id=proof.signer_key_id,
+        backend=zk_backend,
     )
