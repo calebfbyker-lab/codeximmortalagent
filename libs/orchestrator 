@@ -1,0 +1,11 @@
+libs/orchestrator/
+├── __init__.py
+├── pyproject.toml
+├── agent_genome.py         # AgentGenome model (memory/offense/defense/profit)
+├── rmpc_controller.py      # RMPC state/control loop
+├── genetic_optimizer.py    # GA for genome evolution
+├── organizational_agent.py # Top-level spawn/clone logic
+└── tests/
+    ├── test_agent_genome.py
+    ├── test_rmpc_controller.py
+    └── test_genetic_optimizer.py
