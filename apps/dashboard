@@ -1,0 +1,18 @@
+apps/dashboard/
+├── package.json
+├── vite.config.ts (or webpack config)
+├── public/
+│   └── index.html
+├── src/
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── api/
+│   │   └── client.ts               # fetch wrappers for backend API
+│   ├── components/
+│   │   ├── WarRoomPanel.tsx
+│   │   ├── ModuleRegistryTable.tsx
+│   │   ├── MindMapView.tsx         # embeds mindmap_live_detail logic
+│   │   └── RmpcStatusPanel.tsx
+│   └── styles/
+│       └── theme.css
+└── mindmap_live_detail.html         # standalone static mind map (already built)
