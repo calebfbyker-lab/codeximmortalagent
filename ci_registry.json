@@ -1,0 +1,1242 @@
+[
+  {
+    "code": "CI-001",
+    "name": "PQC-ARCH",
+    "description": "ML-KEM/ML-DSA keypair lifecycle and HNDL exposure mapping.",
+    "layer": "PQC-SPINE",
+    "evolution_stage": "core",
+    "agentic_function": "crypto",
+    "security_class": "TS_SCI",
+    "dependencies": [],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "pqc",
+      "keys",
+      "hndl"
+    ]
+  },
+  {
+    "code": "CI-002",
+    "name": "SHARD-VAULT",
+    "description": "Shamir secret sharing, IPFS/Arweave/Filecoin storage, Merkle tamper detection.",
+    "layer": "SHARD-VAULT",
+    "evolution_stage": "core",
+    "agentic_function": "storage",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-001"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "vault",
+      "sharding",
+      "storage"
+    ]
+  },
+  {
+    "code": "CI-003",
+    "name": "MN-NET-CORE",
+    "description": "4-agent core (Sentinel, Strategist, Archivist, Executor) and OODA/BFT consensus.",
+    "layer": "MN-NET",
+    "evolution_stage": "core",
+    "agentic_function": "govern",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-001"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "mesh",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "agents",
+      "consensus",
+      "ooda"
+    ]
+  },
+  {
+    "code": "CI-004",
+    "name": "NFT-MINT",
+    "description": "ERC-721 minting with ZK metadata and multisig custody.",
+    "layer": "NFT-VAULT",
+    "evolution_stage": "core",
+    "agentic_function": "crypto",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-001",
+      "CI-005"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "nft",
+      "mint",
+      "zk"
+    ]
+  },
+  {
+    "code": "CI-005",
+    "name": "ZK-PROOF",
+    "description": "Groth16/PLONK/STARK circuits for verifiable events and checkpoints.",
+    "layer": "ZK-LAYER",
+    "evolution_stage": "core",
+    "agentic_function": "crypto",
+    "security_class": "SECRET",
+    "dependencies": [],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "zk",
+      "proof",
+      "circuit"
+    ]
+  },
+  {
+    "code": "CI-006",
+    "name": "KEY-ROTATION",
+    "description": "Time-window key rotation (session/signing/master/custody).",
+    "layer": "PQC-SPINE",
+    "evolution_stage": "core",
+    "agentic_function": "crypto",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-001"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "rotation",
+      "keys"
+    ]
+  },
+  {
+    "code": "CI-007",
+    "name": "STORAGE-POLICY",
+    "description": "Tiered storage: IPFS hot, Arweave warm, Filecoin cold, HSM air-gap.",
+    "layer": "SHARD-VAULT",
+    "evolution_stage": "core",
+    "agentic_function": "storage",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-002"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "storage",
+      "tiering"
+    ]
+  },
+  {
+    "code": "CI-008",
+    "name": "CUSTODY-CHAIN",
+    "description": "3-of-5 multisig custody and theater commander co-sign for TS_SCI assets.",
+    "layer": "NFT-VAULT",
+    "evolution_stage": "core",
+    "agentic_function": "govern",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-004"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "custody",
+      "multisig"
+    ]
+  },
+  {
+    "code": "CI-009",
+    "name": "THREAT-BOARD",
+    "description": "Live Shield Score, Sentinel alerts, IOC scores, human gates.",
+    "layer": "DASHBOARD",
+    "evolution_stage": "operational",
+    "agentic_function": "observe",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-021"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "dashboard",
+      "alerts"
+    ]
+  },
+  {
+    "code": "CI-010",
+    "name": "RED-TEAM",
+    "description": "Kill-chain simulation, MITRE ATT&CK tagging, blind-spot identification.",
+    "layer": "OFFENSE",
+    "evolution_stage": "operational",
+    "agentic_function": "act",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-020"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "redteam",
+      "mitre"
+    ]
+  },
+  {
+    "code": "CI-011",
+    "name": "LOCKDOWN-LATTICE",
+    "description": "Vault freeze, key rotation, forensic snapshot, NFT recovery.",
+    "layer": "GOVERNANCE",
+    "evolution_stage": "operational",
+    "agentic_function": "govern",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-002",
+      "CI-006"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "lockdown",
+      "recovery"
+    ]
+  },
+  {
+    "code": "CI-012",
+    "name": "TRUST-PURGE",
+    "description": "Revocation, quorum reissuance, confidence graph rebuild.",
+    "layer": "GOVERNANCE",
+    "evolution_stage": "operational",
+    "agentic_function": "govern",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-003"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "trust",
+      "purge"
+    ]
+  },
+  {
+    "code": "CI-013",
+    "name": "SOVEREIGN-RESTORE",
+    "description": "Shard recovery, re-split, re-distribute, RESTORE NFT.",
+    "layer": "SHARD-VAULT",
+    "evolution_stage": "operational",
+    "agentic_function": "govern",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-002",
+      "CI-004"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "restore",
+      "recovery"
+    ]
+  },
+  {
+    "code": "CI-014",
+    "name": "HNDL-TRIAGE",
+    "description": "Classical crypto exposure map, PQC migration roadmap.",
+    "layer": "PQC-SPINE",
+    "evolution_stage": "operational",
+    "agentic_function": "crypto",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-001"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "hndl",
+      "migration"
+    ]
+  },
+  {
+    "code": "CI-015",
+    "name": "AI-PIPELINE",
+    "description": "Sovereign training/inference, model-poisoning defense, NFT checkpoints.",
+    "layer": "AI-PIPELINE",
+    "evolution_stage": "operational",
+    "agentic_function": "learn",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-004",
+      "CI-028"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "ai",
+      "training"
+    ]
+  },
+  {
+    "code": "CI-016",
+    "name": "OLLAMA-DEPLOY",
+    "description": "Local LLM deployment and governed Modelfiles.",
+    "layer": "AI-PIPELINE",
+    "evolution_stage": "operational",
+    "agentic_function": "tool",
+    "security_class": "UNCLASSIFIED",
+    "dependencies": [
+      "CI-015"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "llm",
+      "ollama"
+    ]
+  },
+  {
+    "code": "CI-017",
+    "name": "LANGRAPH-WARLAB",
+    "description": "LangGraph multi-agent graphs for War Lab workflows.",
+    "layer": "MN-NET",
+    "evolution_stage": "operational",
+    "agentic_function": "orient",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-003"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "mesh",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "langgraph",
+      "workflow"
+    ]
+  },
+  {
+    "code": "CI-018",
+    "name": "FEDERATED-MESH",
+    "description": "5-node BFT mesh, sovereign mission cycle.",
+    "layer": "MN-NET",
+    "evolution_stage": "operational",
+    "agentic_function": "govern",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-003"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "mesh",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "mesh",
+      "bft"
+    ]
+  },
+  {
+    "code": "CI-019",
+    "name": "OSINT-FUSION",
+    "description": "12-source OSINT fusion engine for IOC verdicts.",
+    "layer": "OSINT",
+    "evolution_stage": "operational",
+    "agentic_function": "sense",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-021"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "osint",
+      "ioc"
+    ]
+  },
+  {
+    "code": "CI-020",
+    "name": "KILL-CHAIN-MAP",
+    "description": "7-stage kill-chain mapping and hardening directives.",
+    "layer": "OFFENSE",
+    "evolution_stage": "operational",
+    "agentic_function": "observe",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "killchain",
+      "mitre"
+    ]
+  },
+  {
+    "code": "CI-021",
+    "name": "SOVEREIGN-DB",
+    "description": "Multi-model DB: document, vector, graph, timeseries, KV.",
+    "layer": "DATA",
+    "evolution_stage": "operational",
+    "agentic_function": "storage",
+    "security_class": "SECRET",
+    "dependencies": [],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "db",
+      "storage"
+    ]
+  },
+  {
+    "code": "CI-022",
+    "name": "DASHBOARD-GEN",
+    "description": "OpenTelemetry metrics and War Lab dashboards.",
+    "layer": "DASHBOARD",
+    "evolution_stage": "operational",
+    "agentic_function": "observe",
+    "security_class": "UNCLASSIFIED",
+    "dependencies": [
+      "CI-021"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "dashboard",
+      "otel"
+    ]
+  },
+  {
+    "code": "CI-023",
+    "name": "FULL-STACK-ARCH",
+    "description": "PQC to NFT to AI to Federation architecture blueprint.",
+    "layer": "DOCS",
+    "evolution_stage": "core",
+    "agentic_function": "doc",
+    "security_class": "UNCLASSIFIED",
+    "dependencies": [],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "none",
+    "tags": [
+      "architecture",
+      "doc"
+    ]
+  },
+  {
+    "code": "CI-024",
+    "name": "SUPPLY-CHAIN-SEC",
+    "description": "SBOM analysis, vendor IOC scoring, TRUST PURGE triggers.",
+    "layer": "SECURITY",
+    "evolution_stage": "operational",
+    "agentic_function": "sense",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-012",
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "supplychain",
+      "sbom"
+    ]
+  },
+  {
+    "code": "CI-025",
+    "name": "INSIDER-DETECT",
+    "description": "Behavioral anomaly detection and TRUST PURGE pipeline.",
+    "layer": "SECURITY",
+    "evolution_stage": "operational",
+    "agentic_function": "sense",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-012"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "insider",
+      "anomaly"
+    ]
+  },
+  {
+    "code": "CI-026",
+    "name": "ICS-SCADA-SEC",
+    "description": "OT telemetry and ICS security directives.",
+    "layer": "SECURITY",
+    "evolution_stage": "operational",
+    "agentic_function": "defend",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "ics",
+      "scada"
+    ]
+  },
+  {
+    "code": "CI-027",
+    "name": "SPACE-SEC",
+    "description": "Orbital tracking, SIGINT feeds, STRATCOM escalation ladder.",
+    "layer": "SECURITY",
+    "evolution_stage": "operational",
+    "agentic_function": "defend",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "space",
+      "sigint"
+    ]
+  },
+  {
+    "code": "CI-028",
+    "name": "MODEL-POISON-DEF",
+    "description": "Training data provenance and gradient monitoring.",
+    "layer": "AI-PIPELINE",
+    "evolution_stage": "operational",
+    "agentic_function": "defend",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-015"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "poisoning",
+      "provenance"
+    ]
+  },
+  {
+    "code": "CI-029",
+    "name": "GPU-DISPATCH",
+    "description": "Secure GPU compute, VRAM allocation, dispatch NFTs.",
+    "layer": "AI-PIPELINE",
+    "evolution_stage": "operational",
+    "agentic_function": "act",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-004",
+      "CI-015"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "gpu",
+      "compute"
+    ]
+  },
+  {
+    "code": "CI-030",
+    "name": "WALLET-DRIFT",
+    "description": "Custody key drift detection and emergency rotation.",
+    "layer": "NFT-VAULT",
+    "evolution_stage": "operational",
+    "agentic_function": "defend",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-008"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "wallet",
+      "drift"
+    ]
+  },
+  {
+    "code": "CI-031",
+    "name": "GEOINT-FUSION",
+    "description": "Geospatial IOC fusion and ISR tasking.",
+    "layer": "OSINT",
+    "evolution_stage": "operational",
+    "agentic_function": "sense",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "geoint",
+      "isr"
+    ]
+  },
+  {
+    "code": "CI-032",
+    "name": "BIO-THREAT",
+    "description": "Bio-threat signals and CISA advisory pipeline.",
+    "layer": "SECURITY",
+    "evolution_stage": "operational",
+    "agentic_function": "sense",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "bio",
+      "threat"
+    ]
+  },
+  {
+    "code": "CI-033",
+    "name": "FIN-THREAT",
+    "description": "Financial threat monitoring and asset freeze.",
+    "layer": "SECURITY",
+    "evolution_stage": "operational",
+    "agentic_function": "sense",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "finance",
+      "threat"
+    ]
+  },
+  {
+    "code": "CI-034",
+    "name": "DISINFO-DETECT",
+    "description": "Social signal, PSYOP alert, platform engagement.",
+    "layer": "SECURITY",
+    "evolution_stage": "operational",
+    "agentic_function": "sense",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "disinfo",
+      "psyop"
+    ]
+  },
+  {
+    "code": "CI-035",
+    "name": "FEDERATED-MESH-V2",
+    "description": "Advanced mesh: PubSub, ThreatVote, ContributionLedger, reward flow.",
+    "layer": "MN-NET",
+    "evolution_stage": "operational",
+    "agentic_function": "govern",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-018"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "mesh",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "mesh",
+      "reward"
+    ]
+  },
+  {
+    "code": "CI-036",
+    "name": "CROSS-MESH-FED",
+    "description": "5 meshes x 5 nodes federation; GlobalEpochNFT/500 cycles.",
+    "layer": "MN-NET",
+    "evolution_stage": "operational",
+    "agentic_function": "govern",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-035"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "mesh",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "mesh",
+      "federation"
+    ]
+  },
+  {
+    "code": "CI-037",
+    "name": "EPOCH-LEDGER",
+    "description": "Global Merkle root; mesh-master ML-DSA sigs; Arweave anchor.",
+    "layer": "LEDGER",
+    "evolution_stage": "core",
+    "agentic_function": "crypto",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-036",
+      "CI-001"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "epoch",
+      "merkle",
+      "ledger"
+    ]
+  },
+  {
+    "code": "CI-038",
+    "name": "MODEL-CHECKPOINT",
+    "description": "ZK-proven training, checkpoint NFT, Archivist promotion policy.",
+    "layer": "AI-PIPELINE",
+    "evolution_stage": "operational",
+    "agentic_function": "learn",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-015",
+      "CI-005"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "checkpoint",
+      "zk"
+    ]
+  },
+  {
+    "code": "CI-039",
+    "name": "CERT-CHAIN",
+    "description": "On-chain skill certification; CertificationNFT per curriculum track.",
+    "layer": "GOVERNANCE",
+    "evolution_stage": "operational",
+    "agentic_function": "govern",
+    "security_class": "UNCLASSIFIED",
+    "dependencies": [
+      "CI-004"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "cert",
+      "curriculum"
+    ]
+  },
+  {
+    "code": "CI-040",
+    "name": "WAR-ROOM",
+    "description": "Live War Room dashboard, proof streams, OSINT agent upgrades.",
+    "layer": "DASHBOARD",
+    "evolution_stage": "operational",
+    "agentic_function": "observe",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019",
+      "CI-021"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "warroom",
+      "dashboard"
+    ]
+  },
+  {
+    "code": "CI-041",
+    "name": "THREAT-HUNT",
+    "description": "Autonomous threat hunting, watchdog agents, HuntReport NFTs.",
+    "layer": "HUNT",
+    "evolution_stage": "operational",
+    "agentic_function": "act",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-019",
+      "CI-021"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "hunt",
+      "autonomous"
+    ]
+  },
+  {
+    "code": "CI-042",
+    "name": "SWARM-INTEL",
+    "description": "Autonomous drone swarms and multi-agent coordination.",
+    "layer": "SWARM",
+    "evolution_stage": "evolution",
+    "agentic_function": "act",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-003",
+      "CI-018"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "swarm",
+      "drone"
+    ]
+  },
+  {
+    "code": "CI-043",
+    "name": "COG-EW",
+    "description": "Cognitive electronic warfare across spectrum and cyber.",
+    "layer": "EW",
+    "evolution_stage": "evolution",
+    "agentic_function": "sense",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-027"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "ew",
+      "spectrum"
+    ]
+  },
+  {
+    "code": "CI-044",
+    "name": "MULTI-DOMAIN-KILL",
+    "description": "Kill-chain orchestration across space, cyber, air, land, sea.",
+    "layer": "OFFENSE",
+    "evolution_stage": "evolution",
+    "agentic_function": "act",
+    "security_class": "TS_SCI",
+    "dependencies": [
+      "CI-020",
+      "CI-042"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "killchain",
+      "multidomain"
+    ]
+  },
+  {
+    "code": "CI-045",
+    "name": "AGENT-REGISTRY",
+    "description": "Agent registry and capability manifests (MCP-aligned).",
+    "layer": "ORCHESTRATOR",
+    "evolution_stage": "evolution",
+    "agentic_function": "govern",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-003"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "registry",
+      "mcp"
+    ]
+  },
+  {
+    "code": "CI-046",
+    "name": "SELF-TRAIN-BLUEPRINT",
+    "description": "Self-training and alignment orchestration for agents.",
+    "layer": "AI-PIPELINE",
+    "evolution_stage": "evolution",
+    "agentic_function": "learn",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-015",
+      "CI-028"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "selftrain",
+      "alignment"
+    ]
+  },
+  {
+    "code": "CI-047",
+    "name": "MONOREPO-FOUNDATION",
+    "description": "Workspace monorepo structure and introspection.",
+    "layer": "DOCS",
+    "evolution_stage": "core",
+    "agentic_function": "doc",
+    "security_class": "UNCLASSIFIED",
+    "dependencies": [],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "none",
+    "tags": [
+      "monorepo",
+      "structure"
+    ]
+  },
+  {
+    "code": "CI-048",
+    "name": "AGE-LATTICE",
+    "description": "Unified memory and protection layer inspired by AgeMem.",
+    "layer": "MEMORY",
+    "evolution_stage": "evolution",
+    "agentic_function": "learn",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-021",
+      "CI-037"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "agent",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "state",
+    "tags": [
+      "memory",
+      "protection",
+      "agemem"
+    ]
+  },
+  {
+    "code": "CI-049",
+    "name": "AGE-LATTICE-GOVERNOR",
+    "description": "Lab-wide memory & protection governance fabric.",
+    "layer": "MEMORY",
+    "evolution_stage": "meta",
+    "agentic_function": "govern",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-048",
+      "CI-021"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "epoch",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "governance",
+      "memory"
+    ]
+  },
+  {
+    "code": "CI-050",
+    "name": "ACTION-PROOF-FRACTAL",
+    "description": "Cryptographic and mathematical proofs of agentic actions.",
+    "layer": "PROOF",
+    "evolution_stage": "meta",
+    "agentic_function": "crypto",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-001",
+      "CI-005",
+      "CI-037"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "epoch",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "proof",
+      "fractal",
+      "merkle"
+    ]
+  },
+  {
+    "code": "CI-051",
+    "name": "FRACTAL-GENETIC-CRYPTOGRAPHY",
+    "description": "Proof-driven neuroevolution across memory, offense, defense, profit.",
+    "layer": "EVOLUTION",
+    "evolution_stage": "meta",
+    "agentic_function": "learn",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-050",
+      "CI-048"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "epoch",
+      "merkle_required": true,
+      "zk_required": false
+    },
+    "rmpc_role": "tool",
+    "tags": [
+      "genetic",
+      "fractal",
+      "crypto"
+    ]
+  },
+  {
+    "code": "CI-052",
+    "name": "ORGANIZATIONAL-NEURAL-MESH",
+    "description": "Agentic cloning, subagents, Merkle-root knowledge graphs.",
+    "layer": "ORCHESTRATOR",
+    "evolution_stage": "meta",
+    "agentic_function": "govern",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-045",
+      "CI-050"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "epoch",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "cloning",
+      "subagents",
+      "graph"
+    ]
+  },
+  {
+    "code": "CI-053",
+    "name": "ORGANIZATIONAL-RMPC-FRACTAL",
+    "description": "RMPC-governed cloning with knowledge graphs and fractal crypto.",
+    "layer": "ORCHESTRATOR",
+    "evolution_stage": "meta",
+    "agentic_function": "control",
+    "security_class": "SECRET",
+    "dependencies": [
+      "CI-052",
+      "CI-051"
+    ],
+    "fractal_genetic_requirements": {
+      "signing": "ML-DSA",
+      "root_level": "epoch",
+      "merkle_required": true,
+      "zk_required": true
+    },
+    "rmpc_role": "control",
+    "tags": [
+      "rmpc",
+      "swarm",
+      "fractal"
+    ]
+  }
+]
