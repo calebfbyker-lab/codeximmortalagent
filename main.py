@@ -7,7 +7,7 @@
 # DEPENDS_ON: apps/api_gateway/backend/app_state.py, apps/api_gateway/backend/ci_registry.json, apps/api_gateway/backend/startup_telemetry.py, libs/core/ci_registry_schema.py
 # EXPOSES: app
 # CRYPTO_PROVENANCE: unsigned runtime entrypoint utility
-# VERSION: v3
+# VERSION: v4
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
