@@ -3,11 +3,11 @@
 # FILE: apps/api_gateway/backend/main.py
 # MODULE: API-ENTRYPOINT-REGISTRY-WIRING
 # LAYER: DATA
-# PURPOSE: Backend API entrypoint with validated registry bootstrap and runtime state exposure
-# DEPENDS_ON: apps/api_gateway/backend/app_state.py, apps/api_gateway/backend/ci_registry.json, libs/core/ci_registry_schema.py
+# PURPOSE: Backend API entrypoint with validated registry bootstrap, runtime state exposure, and startup telemetry emission
+# DEPENDS_ON: apps/api_gateway/backend/app_state.py, apps/api_gateway/backend/ci_registry.json, apps/api_gateway/backend/startup_telemetry.py, libs/core/ci_registry_schema.py
 # EXPOSES: app
 # CRYPTO_PROVENANCE: unsigned runtime entrypoint utility
-# VERSION: v1
+# VERSION: v2
 # TAG: [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL]
 # ============================================================
 
@@ -20,6 +20,7 @@ from fastapi import FastAPI, HTTPException, Request
 
 from app_state import AppState, bootstrap_registry_state
 from core.ci_registry_schema import CiModule, find_by_code
+from startup_telemetry import telemetry_json
 
 
 REGISTRY_PATH = Path(__file__).with_name("ci_registry.json")
@@ -28,6 +29,7 @@ REGISTRY_PATH = Path(__file__).with_name("ci_registry.json")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.codex = bootstrap_registry_state(REGISTRY_PATH)
+    print(telemetry_json(app.state.codex))
     yield
 
 
