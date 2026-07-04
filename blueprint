@@ -1,0 +1,61 @@
+codeximmortalagent/
+├── README.md
+├── CODEXIMMORTAL.md
+├── AGENTS.md
+├── LICENSE
+├── .gitignore
+├── pyproject.toml
+├── Makefile
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       ├── deploy-staging.yml
+│       ├── nft-mint.yml
+│       └── security-audit.yml
+├── apps/
+│   ├── api_gateway/
+│   │   ├── pyproject.toml
+│   │   ├── backend/
+│   │   │   ├── __init__.py
+│   │   │   ├── main.py
+│   │   │   ├── config.py
+│   │   │   ├── connection_manager.py
+│   │   │   ├── ci_registry.json
+│   │   │   ├── age_lattice_adapter.py
+│   │   │   ├── orchestrator_rmpc.py
+│   │   │   ├── knowledge_graph_api.py
+│   │   │   └── routes/
+│   │   └── tests/
+│   └── dashboard/
+│       ├── package.json
+│       ├── vite.config.ts
+│       ├── public/index.html
+│       └── src/
+├── libs/
+│   ├── core/
+│   ├── age_lattice/
+│   ├── orchestrator/
+│   └── knowledge_graph/
+├── registry/
+│   ├── ci_registry.json
+│   ├── ci_sprint_groups.json
+│   └── sovereign_layers.json
+├── configs/
+│   ├── settings.py
+│   ├── validator.py
+│   ├── vault_loader.py
+│   └── profiles/
+├── infra/
+│   ├── docker/
+│   ├── nginx/
+│   └── db/
+├── docs/
+│   ├── ci_modules/
+│   ├── architecture/
+│   ├── playbooks/
+│   └── file_manifest.md
+├── scripts/
+│   ├── launcher.py
+│   └── dev_run_all.sh
+└── tests/
+    └── integration/
