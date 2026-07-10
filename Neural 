@@ -1,0 +1,255 @@
+# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-RUNNER]
+
+from dataclasses import asdict
+from typing import Any, Dict, List
+
+from agents.agent_orchestrator import WarLabOrchestrator
+from config.settings import WarLabSettings
+from config.validator import assert_valid_settings
+from neural_fabric.consensus import AgentVote, ConsensusEngine
+from neural_fabric.state import WarLabState
+
+
+class WarLabRunner:
+    def __init__(self, settings: WarLabSettings | None = None):
+        self.settings = settings or WarLabSettings()
+        assert_valid_settings(self.settings)
+        self.consensus = ConsensusEngine(self.settings)
+        self.orchestrator = WarLabOrchestrator(self.settings)
+
+    def _build_initial_state(self, threat_input: str, impact_score: float) -> WarLabState:
+        return {
+            "threat_input": threat_input,
+            "ooda_loop_count": 1,
+            "anomaly_scores": {},
+            "nft_evidence_refs": [],
+            "human_gate_required": False,
+            "human_gate_response": None,
+            "messages": [],
+            "ci_targets": [],
+            "active_layer": "MN-NET",
+            "classification": "UNCLASSIFIED",
+            "impact_score": impact_score,
+            "codex_tag": self.settings.codex_tag,
+        }
+
+    def run_ooda(self, threat_input: str, impact_score: float = 4.0) -> Dict[str, Any]:
+        state = self._build_initial_state(threat_input, impact_score)
+
+        proposal = self.orchestrator.build_proposal(threat_input, impact_score=impact_score)
+        state["ci_targets"] = proposal.ci_targets
+
+        votes: List[AgentVote] = [
+            AgentVote("SENTINEL", "APPROVE", 0.81, "No blocking anomaly detected."),
+            AgentVote("STRATEGIST", "APPROVE", 0.84, "Capability aligns to registry targets."),
+            AgentVote("ARCHIVIST", "APPROVE", 0.78, "Dependencies and audit lineage are resolvable."),
+            AgentVote("EXECUTOR", "APPROVE", 0.76, "Execution phases are properly structured."),
+        ]
+
+        matched_domains = []
+        for reason in proposal.human_gate_reasons:
+            if ":" in reason:
+                _, domain = reason.split(":", 1)
+                matched_domains.append(domain)
+
+        consensus = self.consensus.evaluate(
+            votes=votes,
+            impact_score=impact_score,
+            domains=matched_domains,
+            classification=state["classification"],
+        )
+
+        state["consensus"] = asdict(consensus)
+        state["human_gate_required"] = consensus.human_gate_required or proposal.human_gate_required
+        state["executor_plan"] = {
+            "proposal_proof_hash": proposal.proof_hash,
+            "implementation": [asdict(p) for p in proposal.implementation],
+            "outcome": consensus.outcome,
+        }
+
+        return {
+            "state": state,
+            "proposal": asdict(proposal),
+            "consensus": asdict(consensus),
+        }
+
+    def run_consensus(self, question: str, impact_score: float = 4.0) -> Dict[str, Any]:
+        result = self.run_ooda(question, impact_score=impact_score)
+        return result["consensus"]# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-GRAPH]
+
+from typing import Any, Callable, Dict
+
+from neural_fabric.runner import WarLabRunner
+
+
+def build_war_lab_graph(runner: WarLabRunner | None = None) -> Dict[str, Callable[..., Any]]:
+    runner = runner or WarLabRunner()
+
+    def observe(threat_input: str, impact_score: float = 4.0) -> Dict[str, Any]:
+        return runner.run_ooda(threat_input, impact_score=impact_score)
+
+    def route(result: Dict[str, Any]) -> str:
+        if result["state"]["human_gate_required"]:
+            return "human_gate"
+        return "audit_stamp"
+
+    return {
+        "observe": observe,
+        "route": route,
+    }# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-HUMAN-GATE]
+
+from dataclasses import dataclass, asdict
+from datetime import UTC, datetime
+from typing import Dict, List, Literal, Optional
+import uuid
+
+
+DecisionValue = Literal["APPROVE", "DENY", "ESCALATE", "PENDING"]
+
+
+@dataclass
+class ApprovalRequest:
+    gate_id: str
+    operation: str
+    context: Dict
+    timeout_seconds: int
+    created_at: str
+    status: DecisionValue = "PENDING"
+
+
+@dataclass
+class GateDecision:
+    request_id: str
+    decision: DecisionValue
+    operator_id: str
+    justification: str
+    timestamp: str
+    conditions: List[str]
+
+
+class HumanGate:
+    def __init__(self) -> None:
+        self._requests: Dict[str, ApprovalRequest] = {}
+        self._decisions: Dict[str, GateDecision] = {}
+
+    def request_approval(self, gate_id: str, operation: str, context: Dict, timeout_seconds: int = 1800) -> ApprovalRequest:
+        request = ApprovalRequest(
+            gate_id=gate_id,
+            operation=operation,
+            context=context,
+            timeout_seconds=timeout_seconds,
+            created_at=datetime.now(UTC).isoformat(),
+        )
+        self._requests[request.gate_id] = request
+        return request
+
+    def await_decision(self, request_id: str) -> Optional[GateDecision]:
+        return self._decisions.get(request_id)
+
+    def submit_decision(
+        self,
+        request_id: str,
+        decision: DecisionValue,
+        operator_id: str,
+        justification: str,
+        conditions: List[str] | None = None,
+    ) -> GateDecision:
+        gate_decision = GateDecision(
+            request_id=request_id,
+            decision=decision,
+            operator_id=operator_id,
+            justification=justification,
+            timestamp=datetime.now(UTC).isoformat(),
+            conditions=conditions or [],
+        )
+        self._decisions[request_id] = gate_decision
+        if request_id in self._requests:
+            self._requests[request_id].status = decision
+        return gate_decision
+
+    def get_pending_gates(self) -> List[Dict]:
+        return [asdict(req) for req in self._requests.values() if req.status == "PENDING"]
+
+
+def new_gate_id() -> str:
+    return f"gate-{uuid.uuid4()}"# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-MASTER-ORCHESTRATOR]
+
+import argparse
+import json
+from dataclasses import asdict
+
+from config.settings import WarLabSettings
+from config.validator import validate_settings
+from neural_fabric.runner import WarLabRunner
+
+
+class MasterWarLabOrchestrator:
+    def __init__(self, settings: WarLabSettings | None = None):
+        self.settings = settings or WarLabSettings()
+        self.runner = WarLabRunner(self.settings)
+
+    def startup_self_test(self) -> dict:
+        validation = validate_settings(self.settings)
+        return {
+            "config_valid": validation.valid,
+            "errors": validation.errors,
+            "warnings": validation.warnings,
+            "shield_score": self.settings.shield_score,
+            "vault_shards": self.settings.vault_shards,
+            "neural_peers": self.settings.neural_peers,
+            "codex_tag": self.settings.codex_tag,
+        }
+
+    def status(self) -> dict:
+        return self.startup_self_test()
+
+    def start(self, dry_run: bool = False) -> dict:
+        health = self.startup_self_test()
+        if dry_run:
+            health["mode"] = "dry-run"
+            return health
+        health["mode"] = "active"
+        return health
+
+    def execute_proposal(self, capability: str, impact_score: float = 4.0) -> dict:
+        return self.runner.run_ooda(capability, impact_score=impact_score)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="CodexImmortal Master Orchestrator")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    start_parser = subparsers.add_parser("start")
+    start_parser.add_argument("--dry-run", action="store_true")
+
+    subparsers.add_parser("status")
+
+    exec_parser = subparsers.add_parser("proposal")
+    exec_parser.add_argument("capability", type=str)
+    exec_parser.add_argument("--impact-score", type=float, default=4.0)
+
+    args = parser.parse_args()
+    orchestrator = MasterWarLabOrchestrator()
+
+    if args.command == "start":
+        result = orchestrator.start(dry_run=args.dry_run)
+    elif args.command == "status":
+        result = orchestrator.status()
+    elif args.command == "proposal":
+        result = orchestrator.execute_proposal(args.capability, args.impact_score)
+    else:
+        raise ValueError(f"Unsupported command: {args.command}")
+
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()
