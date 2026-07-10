@@ -1,0 +1,458 @@
+# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-TELEMETRY]
+
+from __future__ import annotations
+
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from functools import wraps
+from time import perf_counter
+from typing import Any, Callable, Dict, List
+
+
+@dataclass
+class MetricEvent:
+    name: str
+    value: float
+    attributes: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class SpanEvent:
+    name: str
+    duration_ms: float
+    attributes: Dict[str, Any] = field(default_factory=dict)
+
+
+class TelemetryRegistry:
+    def __init__(self) -> None:
+        self.metrics: List[MetricEvent] = []
+        self.spans: List[SpanEvent] = []
+
+    def record_metric(self, name: str, value: float, **attributes: Any) -> None:
+        self.metrics.append(MetricEvent(name=name, value=value, attributes=attributes))
+
+    def record_span(self, name: str, duration_ms: float, **attributes: Any) -> None:
+        self.spans.append(SpanEvent(name=name, duration_ms=duration_ms, attributes=attributes))
+
+
+telemetry = TelemetryRegistry()
+
+
+def _timed_span(span_name: str, **attrs: Any):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            start = perf_counter()
+            result = func(*args, **kwargs)
+            duration_ms = (perf_counter() - start) * 1000
+            telemetry.record_span(span_name, duration_ms, function=func.__name__, **attrs)
+            return result
+        return wrapper
+    return decorator
+
+
+def trace_agent_call(agent_name: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    return _timed_span("codex.agent.call", agent=agent_name)
+
+
+def trace_ooda_phase(phase_name: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    return _timed_span("codex.ooda.phase", phase=phase_name)
+
+
+def trace_consensus(func: Callable[..., Any]) -> Callable[..., Any]:
+    return _timed_span("codex.consensus.round")(func)
+
+
+@contextmanager
+def measure_ooda_loop():
+    start = perf_counter()
+    try:
+        yield
+    finally:
+        duration_ms = (perf_counter() - start) * 1000
+        telemetry.record_metric("codex.ooda.loop_duration", duration_ms)
+
+
+def record_anomaly_score(score: float, node: str = "SENTINEL") -> None:
+    telemetry.record_metric("codex.anomaly.score", score, node=node)
+
+
+def record_consensus_vote(vote: str, agent: str) -> None:
+    telemetry.record_metric("codex.consensus.vote_distribution", 1, vote=vote, agent=agent)
+
+
+def record_playbook_execution(playbook_name: str, status: str) -> None:
+    telemetry.record_metric("codex.playbook.executions", 1, playbook=playbook_name, status=status)
+
+
+def record_nft_mint(event_type: str) -> None:
+    telemetry.record_metric("codex.nft.mints", 1, event_type=event_type)# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-NOTIFICATIONS]
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Dict, Protocol
+
+
+@dataclass
+class NotificationResult:
+    channel: str
+    delivered: bool
+    detail: str
+
+
+class Notifier(Protocol):
+    def send(self, title: str, body: str, context: Dict) -> NotificationResult:
+        ...
+
+
+class SlackNotifier:
+    def send(self, title: str, body: str, context: Dict) -> NotificationResult:
+        return NotificationResult("slack", True, f"Slack queued: {title}")
+
+
+class EmailNotifier:
+    def send(self, title: str, body: str, context: Dict) -> NotificationResult:
+        return NotificationResult("email", True, f"Email queued: {title}")
+
+
+class WebhookNotifier:
+    def send(self, title: str, body: str, context: Dict) -> NotificationResult:
+        return NotificationResult("webhook", True, f"Webhook posted: {context.get('gate_id', 'unknown')}")
+
+
+class CLINotifier:
+    def send(self, title: str, body: str, context: Dict) -> NotificationResult:
+        return NotificationResult("cli", True, f"CLI alert prepared: {title}")
+
+
+class NFTGateNotifier:
+    def send(self, title: str, body: str, context: Dict) -> NotificationResult:
+        return NotificationResult("nft_gate", True, f"On-chain approval requested: {context.get('gate_id', 'unknown')}")# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-HUMAN-GATE]
+
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict, field
+from datetime import UTC, datetime, timedelta
+from typing import Dict, List, Literal, Optional
+
+from integration.notifications import Notifier, NotificationResult
+
+
+DecisionValue = Literal["APPROVE", "DENY", "ESCALATE", "PENDING"]
+
+
+@dataclass
+class ApprovalRequest:
+    gate_id: str
+    operation: str
+    context: Dict
+    timeout_seconds: int
+    created_at: str
+    required_approvers: int = 1
+    status: DecisionValue = "PENDING"
+
+
+@dataclass
+class GateDecision:
+    request_id: str
+    decision: DecisionValue
+    operator_id: str
+    justification: str
+    timestamp: str
+    conditions: List[str] = field(default_factory=list)
+
+
+class GateRegistry:
+    def __init__(self) -> None:
+        self._requests: Dict[str, ApprovalRequest] = {}
+        self._decisions: Dict[str, List[GateDecision]] = {}
+        self._notifiers: Dict[str, List[Notifier]] = {}
+        self.audit_log: List[Dict] = []
+
+    def register_gate(self, gate_id: str, required_approvers: int, notifiers: List[Notifier]) -> None:
+        self._notifiers[gate_id] = notifiers
+        self.audit_log.append({
+            "event": "gate_registered",
+            "gate_id": gate_id,
+            "required_approvers": required_approvers,
+            "timestamp": datetime.now(UTC).isoformat(),
+        })
+
+    def add_request(self, request: ApprovalRequest) -> None:
+        self._requests[request.gate_id] = request
+        self.audit_log.append({
+            "event": "gate_requested",
+            "gate_id": request.gate_id,
+            "operation": request.operation,
+            "timestamp": datetime.now(UTC).isoformat(),
+        })
+
+    def add_decision(self, decision: GateDecision) -> None:
+        self._decisions.setdefault(decision.request_id, []).append(decision)
+        self.audit_log.append({
+            "event": "gate_decision",
+            **asdict(decision),
+        })
+
+    def get_pending_gates(self) -> List[ApprovalRequest]:
+        self.timeout_handler()
+        return [req for req in self._requests.values() if req.status == "PENDING"]
+
+    def timeout_handler(self) -> None:
+        now = datetime.now(UTC)
+        for req in self._requests.values():
+            if req.status != "PENDING":
+                continue
+            created = datetime.fromisoformat(req.created_at)
+            if now > created + timedelta(seconds=req.timeout_seconds):
+                req.status = "ESCALATE"
+                self.audit_log.append({
+                    "event": "gate_timeout",
+                    "gate_id": req.gate_id,
+                    "timestamp": now.isoformat(),
+                })
+
+
+class HumanGate:
+    def __init__(self, registry: GateRegistry | None = None):
+        self.registry = registry or GateRegistry()
+
+    def request_approval(
+        self,
+        gate_id: str,
+        operation: str,
+        context: Dict,
+        timeout_seconds: int = 1800,
+        required_approvers: int = 1,
+    ) -> tuple[ApprovalRequest, List[NotificationResult]]:
+        request = ApprovalRequest(
+            gate_id=gate_id,
+            operation=operation,
+            context=context,
+            timeout_seconds=timeout_seconds,
+            created_at=datetime.now(UTC).isoformat(),
+            required_approvers=required_approvers,
+        )
+        self.registry.add_request(request)
+
+        notifications: List[NotificationResult] = []
+        for notifier in self.registry._notifiers.get(gate_id, []):
+            notifications.append(
+                notifier.send(
+                    title=f"Codex Gate Request: {operation}",
+                    body="Human review required for protected action.",
+                    context={"gate_id": gate_id, **context},
+                )
+            )
+        return request, notifications
+
+    def await_decision(self, request_id: str) -> Optional[DecisionValue]:
+        self.registry.timeout_handler()
+        request = self.registry._requests.get(request_id)
+        return request.status if request else None
+
+    def submit_decision(
+        self,
+        request_id: str,
+        decision: DecisionValue,
+        operator_id: str,
+        justification: str,
+        conditions: List[str] | None = None,
+    ) -> GateDecision:
+        gate_decision = GateDecision(
+            request_id=request_id,
+            decision=decision,
+            operator_id=operator_id,
+            justification=justification,
+            timestamp=datetime.now(UTC).isoformat(),
+            conditions=conditions or [],
+        )
+        self.registry.add_decision(gate_decision)
+        request = self.registry._requests[request_id]
+        current = self.registry._decisions[request_id]
+
+        approvals = sum(1 for item in current if item.decision == "APPROVE")
+        denies = sum(1 for item in current if item.decision == "DENY")
+        escalations = sum(1 for item in current if item.decision == "ESCALATE")
+
+        if denies > 0:
+            request.status = "DENY"
+        elif escalations > 0:
+            request.status = "ESCALATE"
+        elif approvals >= request.required_approvers:
+            request.status = "APPROVE"
+
+        return gate_decision# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-LEARNING-COLLECTOR]
+
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict
+from datetime import UTC, datetime
+from hashlib import sha256
+from typing import Any, Dict
+
+
+@dataclass
+class TrainingSample:
+    sample_id: str
+    input_text: str
+    output_text: str
+    label: str
+    quality_score: float
+    provenance_nft: str
+    timestamp: str
+
+
+class TrainingDataCollector:
+    def capture_ooda_outcome(self, ooda_result: Dict[str, Any], was_correct: bool) -> TrainingSample:
+        payload = str(ooda_result)
+        sample_id = sha256(payload.encode()).hexdigest()[:16]
+        return TrainingSample(
+            sample_id=sample_id,
+            input_text=ooda_result["state"]["threat_input"],
+            output_text=str(ooda_result["consensus"]),
+            label="correct" if was_correct else "incorrect",
+            quality_score=0.9 if was_correct else 0.4,
+            provenance_nft=f"nft://{sample_id}",
+            timestamp=datetime.now(UTC).isoformat(),
+        )
+
+    def capture_threat_resolution(self, threat_event: Dict[str, Any], resolution: str, time_to_resolve: float) -> TrainingSample:
+        seed = f"{threat_event}|{resolution}|{time_to_resolve}"
+        sample_id = sha256(seed.encode()).hexdigest()[:16]
+        quality = max(0.1, min(1.0, 1.0 - (time_to_resolve / 10000)))
+        return TrainingSample(
+            sample_id=sample_id,
+            input_text=str(threat_event),
+            output_text=resolution,
+            label="resolved",
+            quality_score=round(quality, 2),
+            provenance_nft=f"nft://{sample_id}",
+            timestamp=datetime.now(UTC).isoformat(),
+        )
+
+    def as_dict(self, sample: TrainingSample) -> Dict[str, Any]:
+        return asdict(sample)# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-LEARNING-CURATOR]
+
+from __future__ import annotations
+
+from dataclasses import replace
+from typing import Iterable, List
+
+from neural_fabric.learning.collector import TrainingSample
+
+
+class DataCurator:
+    SENSITIVE_TERMS = ("TOP_SECRET", "TS_SCI", "SECRET", "COMMANDER")
+
+    def score_quality(self, sample: TrainingSample) -> float:
+        base = sample.quality_score
+        if sample.label == "correct":
+            base += 0.05
+        return round(min(base, 1.0), 2)
+
+    def deduplicate(self, samples: Iterable[TrainingSample]) -> List[TrainingSample]:
+        seen = {}
+        for sample in samples:
+            seen[sample.sample_id] = sample
+        return list(seen.values())
+
+    def apply_redaction(self, sample: TrainingSample) -> TrainingSample:
+        redacted_input = sample.input_text
+        redacted_output = sample.output_text
+        for term in self.SENSITIVE_TERMS:
+            redacted_input = redacted_input.replace(term, "[REDACTED]")
+            redacted_output = redacted_output.replace(term, "[REDACTED]")
+        return replace(sample, input_text=redacted_input, output_text=redacted_output)
+
+    def apply_differential_privacy(self, samples: Iterable[TrainingSample], epsilon: float) -> List[TrainingSample]:
+        adjusted = []
+        penalty = min(0.2, 1 / max(epsilon, 1))
+        for sample in samples:
+            adjusted.append(replace(sample, quality_score=round(max(0.0, sample.quality_score - penalty), 2)))
+        return adjusted# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-BATCH-MANAGER]
+
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict
+from statistics import mean
+from typing import Dict, List
+
+from neural_fabric.human_gate import HumanGate
+from neural_fabric.learning.collector import TrainingSample
+
+
+@dataclass
+class TrainingBatch:
+    batch_id: str
+    samples: List[TrainingSample]
+    statistics: Dict[str, float]
+    quality_report: Dict[str, float]
+    nft_lineage_proofs: List[str]
+
+
+class BatchManager:
+    def __init__(self, human_gate: HumanGate):
+        self.human_gate = human_gate
+
+    def assemble_batch(self, samples: List[TrainingSample], min_samples: int = 2, max_samples: int = 100) -> TrainingBatch:
+        selected = samples[:max_samples]
+        if len(selected) < min_samples:
+            raise ValueError("Not enough samples to assemble batch.")
+
+        stats = {
+            "count": float(len(selected)),
+            "avg_quality": round(mean(s.quality_score for s in selected), 3),
+        }
+        quality_report = {
+            "min_quality": min(s.quality_score for s in selected),
+            "max_quality": max(s.quality_score for s in selected),
+        }
+        lineage = [s.provenance_nft for s in selected]
+
+        return TrainingBatch(
+            batch_id=f"batch-{len(selected)}-{int(stats['avg_quality'] * 1000)}",
+            samples=selected,
+            statistics=stats,
+            quality_report=quality_report,
+            nft_lineage_proofs=lineage,
+        )
+
+    def submit_for_approval(self, batch: TrainingBatch):
+        return self.human_gate.request_approval(
+            gate_id=batch.batch_id,
+            operation="learning-batch-approval",
+            context={
+                "batch_id": batch.batch_id,
+                "sample_count": len(batch.samples),
+                "avg_quality": batch.statistics["avg_quality"],
+            },
+            timeout_seconds=3600,
+            required_approvers=1,
+        )
+
+    def on_approved(self, batch: TrainingBatch) -> Dict:
+        return {
+            "batch_id": batch.batch_id,
+            "status": "approved_for_fine_tune",
+            "sample_count": len(batch.samples),
+            "lineage_count": len(batch.nft_lineage_proofs),
+        }
+
+    def as_dict(self, batch: TrainingBatch) -> Dict:
+        data = asdict(batch)
+        data["samples"] = [asdict(s) for s in batch.samples]
+        return data
