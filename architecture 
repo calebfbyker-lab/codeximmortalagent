@@ -373,3 +373,161 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-NEURAL-FABRIC-STATE]
+
+from typing import Any, Dict, List, Optional, TypedDict
+
+
+class WarLabState(TypedDict, total=False):
+    threat_input: str
+    sentinel_report: Dict[str, Any]
+    strategist_coa: Dict[str, Any]
+    archivist_memory: Dict[str, Any]
+    executor_plan: Dict[str, Any]
+
+    consensus: Dict[str, Any]
+    ooda_loop_count: int
+    anomaly_scores: Dict[str, float]
+    nft_evidence_refs: List[str]
+
+    human_gate_required: bool
+    human_gate_response: Optional[Dict[str, Any]]
+    pending_gate_id: Optional[str]
+
+    messages: List[Dict[str, Any]]
+    ci_targets: List[str]
+    active_layer: str
+    classification: str
+    impact_score: float
+    codex_tag: str{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codeximmortal.local/schemas/codex_evolution_proposal.schema.json",
+  "title": "CodexEvolutionProposal",
+  "type": "object",
+  "required": [
+    "proposed_by",
+    "capability",
+    "layer",
+    "trigger",
+    "description",
+    "ci_targets",
+    "dependencies",
+    "human_gate_required",
+    "human_gate_reasons",
+    "implementation",
+    "payoff_delta",
+    "codex_tag",
+    "created_at",
+    "proof_hash"
+  ],
+  "properties": {
+    "proposed_by": { "type": "string", "minLength": 1 },
+    "capability": { "type": "string", "minLength": 1 },
+    "layer": { "type": "string", "minLength": 1 },
+    "trigger": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "ci_targets": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^CI-\\d{3}$" },
+      "minItems": 1
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^CI-\\d{3}$" }
+    },
+    "human_gate_required": { "type": "boolean" },
+    "human_gate_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "implementation": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["label", "detail"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "detail": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "payoff_delta": {
+      "type": "object",
+      "required": ["shield_score", "vault_shards", "neural_peers"],
+      "properties": {
+        "shield_score": { "type": "number" },
+        "vault_shards": { "type": "integer", "minimum": 0 },
+        "neural_peers": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "codex_tag": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "proof_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "additionalProperties": false
+}# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CONFIG-VALIDATOR]
+
+from dataclasses import dataclass, field
+from typing import List
+
+from config.settings import WarLabSettings
+
+
+@dataclass
+class ValidationResult:
+    valid: bool
+    errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+
+
+def validate_settings(settings: WarLabSettings) -> ValidationResult:
+    errors: List[str] = []
+    warnings: List[str] = []
+
+    if not settings.codex_tag:
+        errors.append("codex_tag must not be empty")
+
+    if settings.agents.context_window < 2048:
+        warnings.append("context_window is below recommended minimum of 2048")
+
+    if settings.playbooks.human_gate_score_threshold <= 0:
+        errors.append("human_gate_score_threshold must be positive")
+
+    if settings.telemetry.metrics_flush_seconds <= 0:
+        errors.append("metrics_flush_seconds must be positive")
+
+    if settings.environment == "production" and not settings.telemetry.otel_enabled:
+        warnings.append("otel is disabled in production")
+
+    if settings.storage.shard_threshold != "3-of-5":
+        warnings.append("shard_threshold differs from documented 3-of-5 baseline")
+
+    if settings.agents.consensus_normal != "4-of-4":
+        warnings.append("consensus_normal differs from documented 4-of-4 baseline")
+
+    if settings.agents.consensus_degraded != "3-of-4":
+        warnings.append("consensus_degraded differs from documented 3-of-4 baseline")
+
+    if settings.agents.consensus_escalation != "2-of-4":
+        warnings.append("consensus_escalation differs from documented 2-of-4 escalation baseline")
+
+    if not settings.playbooks.gated_domains:
+        errors.append("gated_domains must not be empty")
+
+    return ValidationResult(valid=len(errors) == 0, errors=errors, warnings=warnings)
+
+
+def assert_valid_settings(settings: WarLabSettings) -> None:
+    result = validate_settings(settings)
+    if not result.valid:
+        raise ValueError("Invalid War Lab settings: " + "; ".join(result.errors))
