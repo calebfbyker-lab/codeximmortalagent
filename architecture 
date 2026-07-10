@@ -1,0 +1,375 @@
+# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CONFIG]
+
+from typing import Literal
+from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class PQCSettings(BaseModel):
+    kem_algorithm: str = "ML-KEM-1024"
+    signing_algorithm: str = "ML-DSA-87"
+    fallback_signing_algorithm: str = "SLH-DSA"
+    session_rotation_hours: int = 24
+    signing_rotation_days: int = 7
+    master_rotation_days: int = 30
+    custody_rotation_days: int = 90
+
+
+class StorageSettings(BaseModel):
+    shard_threshold: str = "3-of-5"
+    primary_hot_store: str = "IPFS"
+    primary_warm_store: str = "Arweave"
+    primary_cold_store: str = "Filecoin"
+    hsm_airgap_enabled: bool = True
+
+
+class AgentSettings(BaseModel):
+    model_name: str = "llama3.2"
+    context_window: int = 8192
+    consensus_normal: str = "4-of-4"
+    consensus_degraded: str = "3-of-4"
+    consensus_escalation: str = "2-of-4"
+    strategist_node: str = "STRATEGIST-PRIME"
+
+
+class NFTSettings(BaseModel):
+    chain_name: str = "Base L2"
+    token_standard: str = "ERC-721"
+    zk_stack: str = "Groth16/PLONK/STARK"
+    custody_threshold: str = "3-of-5"
+
+
+class PlaybookSettings(BaseModel):
+    human_gate_score_threshold: float = 8.5
+    gated_domains: list[str] = Field(
+        default_factory=lambda: [
+            "KINETIC",
+            "BIO",
+            "SPACE",
+            "TOP_SECRET",
+            "TS_SCI",
+            "MASTER_SHARD_ROTATION",
+            "RED_TEAM_L5",
+            "RED_TEAM_L6",
+        ]
+    )
+    automated_phase_label: str = "AUTOMATED"
+    human_gate_phase_label: str = "HUMAN GATE"
+    audit_stamp_phase_label: str = "AUDIT STAMP"
+
+
+class TelemetrySettings(BaseModel):
+    otel_enabled: bool = True
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
+    metrics_flush_seconds: int = 10
+
+
+class WarLabSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_prefix="CODEX_",
+        env_nested_delimiter="__",
+        extra="ignore",
+    )
+
+    environment: Literal["dev", "staging", "production", "airgap"] = "dev"
+    codex_tag: str = "CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL"
+    author: str = "Caleb Fedor Byker Konev"
+    date_of_birth: str = "10/27/1998"
+    location: str = "Grand Rapids, Michigan"
+
+    shield_score: float = 103.4
+    vault_shards: int = 37480
+    neural_peers: int = 1024
+    attested_nfts: int = 17832
+
+    pqc: PQCSettings = PQCSettings()
+    storage: StorageSettings = StorageSettings()
+    agents: AgentSettings = AgentSettings()
+    nft: NFTSettings = NFTSettings()
+    playbooks: PlaybookSettings = PlaybookSettings()
+    telemetry: TelemetrySettings = TelemetrySettings()# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-GOAL-LIB]
+
+from dataclasses import dataclass, field
+from typing import Dict, List
+
+
+@dataclass
+class GoalSpec:
+    ci_id: str
+    module_name: str
+    layer: str
+    description: str
+    dependencies: List[str] = field(default_factory=list)
+    domains: List[str] = field(default_factory=list)
+    novelty_focus: str = ""
+    status: str = "SPECIFIED"
+
+
+GOAL_REGISTRY: Dict[str, GoalSpec] = {
+    "CI-001": GoalSpec("CI-001", "PQC-ARCH", "PQC SPINE", "ML-KEM + ML-DSA key lifecycle and HNDL exposure mapping", [], ["CRYPTO"]),
+    "CI-002": GoalSpec("CI-002", "SHARD-VAULT", "SHARD VAULT", "Shamir split/combine with distributed storage and Merkle verification", ["CI-001"], ["CRYPTO", "STORAGE"]),
+    "CI-003": GoalSpec("CI-003", "MN-NET-CORE", "MN-NET", "4-agent BFT consensus and OODA goal-proof engine", ["CI-001"], ["AI", "GOVERNANCE"]),
+    "CI-004": GoalSpec("CI-004", "NFT-MINT", "NFT VAULT", "ERC-721 provenance minting with multisig custody", ["CI-001", "CI-003"], ["BLOCKCHAIN", "AUDIT"]),
+    "CI-005": GoalSpec("CI-005", "ZK-PROOF", "NFT VAULT", "Groth16/PLONK/STARK proof catalog for classified verification", ["CI-004"], ["CRYPTO", "AUDIT"]),
+    "CI-006": GoalSpec("CI-006", "KEY-ROTATION", "PQC SPINE", "24h/7d/30d/90d rotation lifecycle enforcement", ["CI-001"], ["CRYPTO"]),
+    "CI-007": GoalSpec("CI-007", "STORAGE-POLICY", "SHARD VAULT", "IPFS/Arweave/Filecoin/HSM policy routing", ["CI-002"], ["STORAGE", "GOVERNANCE"]),
+    "CI-008": GoalSpec("CI-008", "CUSTODY-CHAIN", "NFT VAULT", "3-of-5 custody transfer with commander co-sign path", ["CI-004"], ["AUDIT", "TS_SCI"]),
+    "CI-009": GoalSpec("CI-009", "THREAT-BOARD", "MN-NET", "Live Shield Score, IOC, and human-gate board", ["CI-003"], ["THREAT_INTEL"]),
+    "CI-010": GoalSpec("CI-010", "RED-TEAM", "MN-NET", "Kill-chain simulation and hardening reports", ["CI-003"], ["RED_TEAM"]),
+    "CI-011": GoalSpec("CI-011", "LOCKDOWN-LATTICE", "PLAYBOOKS", "Vault freeze, key rotation, forensic snapshot, NFT recovery", ["CI-006", "CI-010"], ["INCIDENT_RESPONSE"]),
+    "CI-012": GoalSpec("CI-012", "TRUST-PURGE", "PLAYBOOKS", "Revoke access and rebuild confidence graph", ["CI-003", "CI-009"], ["ZERO_TRUST"]),
+    "CI-013": GoalSpec("CI-013", "SOVEREIGN-RESTORE", "PLAYBOOKS", "3-of-5 shard recovery, re-split, and redistribution", ["CI-002", "CI-011"], ["RECOVERY"]),
+    "CI-014": GoalSpec("CI-014", "HNDL-TRIAGE", "PQC SPINE", "Classical crypto exposure map and PQC migration roadmap", ["CI-001", "CI-006"], ["CRYPTO"]),
+    "CI-015": GoalSpec("CI-015", "AI-PIPELINE", "MN-NET", "Sovereign training and inference with checkpoint governance", ["CI-003"], ["AI"]),
+    "CI-016": GoalSpec("CI-016", "OLLAMA-DEPLOY", "MN-NET", "Local model deployment runtime", ["CI-015"], ["AI"]),
+    "CI-017": GoalSpec("CI-017", "LANGRAPH-WARLAB", "MN-NET", "LangGraph node assembly for 4-agent fabric", ["CI-003", "CI-015"], ["AI"]),
+    "CI-018": GoalSpec("CI-018", "FEDERATED-MESH", "MN-NET", "5-node BFT mesh mission cycle", ["CI-017"], ["FEDERATION"]),
+    "CI-019": GoalSpec("CI-019", "OSINT-FUSION", "MN-NET", "12-source IOC scoring engine", ["CI-009"], ["OSINT"]),
+    "CI-020": GoalSpec("CI-020", "KILL-CHAIN-MAP", "MN-NET", "MITRE ATT&CK stage mapping and hardening", ["CI-010"], ["RED_TEAM"]),
+    "CI-021": GoalSpec("CI-021", "SOVEREIGN-DB", "MN-NET", "Document/vector/graph/timeseries/KV memory substrate", ["CI-017"], ["DATA"]),
+    "CI-022": GoalSpec("CI-022", "DASHBOARD-GEN", "MN-NET", "OpenTelemetry dashboard and live status generation", ["CI-009", "CI-021"], ["OBSERVABILITY"]),
+    "CI-023": GoalSpec("CI-023", "FULL-STACK-ARCH", "PLAYBOOKS", "End-to-end blueprint from PQC to federation", ["CI-001", "CI-022"], ["ARCHITECTURE"]),
+    "CI-024": GoalSpec("CI-024", "SUPPLY-CHAIN-SEC", "MN-NET", "SBOM and vendor IOC scoring with purge triggers", ["CI-019"], ["SUPPLY_CHAIN"]),
+    "CI-025": GoalSpec("CI-025", "INSIDER-DETECT", "MN-NET", "Behavioral anomaly scoring for insider risk", ["CI-009", "CI-021"], ["INSIDER"]),
+    "CI-026": GoalSpec("CI-026", "ICS-SCADA-SEC", "MN-NET", "OT telemetry segmentation and patch directives", ["CI-020"], ["ICS"]),
+    "CI-027": GoalSpec("CI-027", "SPACE-SEC", "MN-NET", "Orbital tracking and escalation ladder", ["CI-019"], ["SPACE"]),
+    "CI-028": GoalSpec("CI-028", "MODEL-POISON-DEF", "MN-NET", "Training provenance and gradient consistency defense", ["CI-015"], ["AI"]),
+    "CI-029": GoalSpec("CI-029", "GPU-DISPATCH", "MN-NET", "Clearance-gated VRAM allocation and secure compute routing", ["CI-015"], ["AI", "SECURE_COMPUTE"]),
+    "CI-030": GoalSpec("CI-030", "WALLET-DRIFT", "NFT VAULT", "Custody-key drift detection and emergency rotation", ["CI-004", "CI-006"], ["BLOCKCHAIN"]),
+    "CI-031": GoalSpec("CI-031", "GEOINT-FUSION", "MN-NET", "Geospatial IOC fusion and theater alerting", ["CI-019"], ["GEOINT"]),
+    "CI-032": GoalSpec("CI-032", "BIO-THREAT", "MN-NET", "Darkweb and OSINT bio-signal pipeline", ["CI-019"], ["BIO"]),
+    "CI-033": GoalSpec("CI-033", "FIN-THREAT", "MN-NET", "Credential and asset-freeze threat flow", ["CI-019"], ["FINANCE"]),
+    "CI-034": GoalSpec("CI-034", "DISINFO-DETECT", "MN-NET", "PSYOP and trust-and-safety engagement flow", ["CI-019"], ["COGNITIVE"]),
+    "CI-035": GoalSpec("CI-035", "FEDERATED-MESH-V2", "MN-NET", "PubSub, ThreatVote, ContributionLedger, reward flow", ["CI-018"], ["FEDERATION"]),
+    "CI-036": GoalSpec("CI-036", "CROSS-MESH-FED", "MN-NET", "5 meshes x 5 nodes, mesh BFT, GlobalEpochNFT", ["CI-035"], ["FEDERATION"]),
+    "CI-037": GoalSpec("CI-037", "EPOCH-LEDGER", "NFT VAULT", "Global Merkle root with 5 mesh-master signatures and Arweave anchor", ["CI-036"], ["FEDERATION", "AUDIT"]),
+    "CI-038": GoalSpec("CI-038", "MODEL-CHECKPOINT", "NFT VAULT", "ZK-proven training checkpoint with promotion policy", ["CI-028", "CI-004"], ["AI", "AUDIT"]),
+    "CI-039": GoalSpec("CI-039", "CERT-CHAIN", "NFT VAULT", "On-chain skill certification", ["CI-004"], ["CERTIFICATION"]),
+    "CI-040": GoalSpec("CI-040", "OSINT-AGENT-V2", "MN-NET", "Per-record ZK-attested OSINT fusion engine", ["CI-019", "CI-005"], ["OSINT"]),
+    "CI-041": GoalSpec("CI-041", "THREAT-HUNT", "MN-NET", "Autonomous watchdog, kill-chain, hardening, HuntNFT", ["CI-019", "CI-020"], ["THREAT_INTEL"]),
+    "CI-042": GoalSpec("CI-042", "SPACE-KINETIC-MESH", "PLAYBOOKS", "Space and kinetic telemetry mesh with strict human escalation", ["CI-027", "CI-036"], ["SPACE", "KINETIC"]),
+    "CI-043": GoalSpec("CI-043", "ICS-KILL-SWITCH-GUARD", "PLAYBOOKS", "Guardrails on ICS kill-switch proposals", ["CI-026"], ["ICS", "KINETIC"]),
+    "CI-044": GoalSpec("CI-044", "SUPPLY-CHAIN-ZERO-HNDL", "PQC SPINE", "Vendor-chain migration toward zero classical crypto exposure", ["CI-014", "CI-024"], ["SUPPLY_CHAIN", "CRYPTO"]),
+    "CI-045": GoalSpec("CI-045", "INSIDER-TRUST-GRAPH", "MN-NET", "Trust graph over insider telemetry, shard access, custody events", ["CI-025", "CI-021"], ["INSIDER", "ZERO_TRUST"]),
+    "CI-046": GoalSpec("CI-046", "GLOBAL-EPOCHNFT-V2", "NFT VAULT", "Second-generation EpochNFT for multi-theater tagging", ["CI-037"], ["FEDERATION", "AUDIT"]),
+    "CI-047": GoalSpec("CI-047", "MESH-REWARD-VAULTS", "NFT VAULT", "Reward vaults linked to ThreatVote and contribution metrics", ["CI-035", "CI-036"], ["ECONOMICS"]),
+    "CI-048": GoalSpec("CI-048", "MULTI-THEATER-MN-NET", "MN-NET", "Multi-theater deployment of the four-agent mesh", ["CI-036", "CI-046"], ["SPACE", "FEDERATION"]),
+}
+
+
+def get_goal(ci_id: str) -> GoalSpec:
+    return GOAL_REGISTRY[ci_id]
+
+
+def find_goals_by_keyword(keyword: str) -> List[GoalSpec]:
+    keyword = keyword.lower()
+    return [
+        goal for goal in GOAL_REGISTRY.values()
+        if keyword in goal.module_name.lower() or keyword in goal.description.lower()
+    ]
+
+
+def all_goals() -> List[GoalSpec]:
+    return list(GOAL_REGISTRY.values())# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-ORCHESTRATOR]
+
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, UTC
+from hashlib import sha256
+from typing import List
+
+from config.settings import WarLabSettings
+from agents.goal_library import GoalSpec, all_goals, find_goals_by_keyword
+
+
+@dataclass
+class ImplementationPhase:
+    label: str
+    detail: str
+
+
+@dataclass
+class PayoffDelta:
+    shield_score: float
+    vault_shards: int
+    neural_peers: int
+
+
+@dataclass
+class EvolutionProposal:
+    proposed_by: str
+    capability: str
+    layer: str
+    trigger: str
+    description: str
+    ci_targets: List[str]
+    dependencies: List[str]
+    human_gate_required: bool
+    human_gate_reasons: List[str]
+    implementation: List[ImplementationPhase]
+    payoff_delta: PayoffDelta
+    codex_tag: str
+    created_at: str
+    proof_hash: str = field(default="")
+
+
+class WarLabOrchestrator:
+    def __init__(self, settings: WarLabSettings | None = None):
+        self.settings = settings or WarLabSettings()
+
+    def resolve_targets(self, request_text: str) -> List[GoalSpec]:
+        text = request_text.lower()
+        matched = []
+        for goal in all_goals():
+            if goal.ci_id.lower() in text or goal.module_name.lower() in text:
+                matched.append(goal)
+        if matched:
+            return matched
+
+        keyword_hits = []
+        for token in ["patent", "mesh", "reward", "space", "bio", "trust", "supply", "epoch", "claim"]:
+            if token in text:
+                keyword_hits.extend(find_goals_by_keyword(token))
+
+        unique = {g.ci_id: g for g in keyword_hits}
+        return list(unique.values())[:8]
+
+    def requires_human_gate(self, goals: List[GoalSpec], impact_score: float) -> tuple[bool, List[str]]:
+        reasons = []
+        if impact_score > self.settings.playbooks.human_gate_score_threshold:
+            reasons.append(f"impact_score>{self.settings.playbooks.human_gate_score_threshold}")
+        for goal in goals:
+            for domain in goal.domains:
+                if domain in {"KINETIC", "BIO", "SPACE", "TS_SCI"}:
+                    reasons.append(f"{goal.ci_id}:{domain}")
+            if "master shard" in goal.description.lower():
+                reasons.append(f"{goal.ci_id}:MASTER_SHARD_ROTATION")
+        return (len(reasons) > 0, sorted(set(reasons)))
+
+    def estimate_payoff(self, goals: List[GoalSpec]) -> PayoffDelta:
+        base = max(1, len(goals))
+        return PayoffDelta(
+            shield_score=round(0.6 * base, 1),
+            vault_shards=base * 150,
+            neural_peers=base * 12,
+        )
+
+    def build_proposal(self, request_text: str, impact_score: float = 4.0) -> EvolutionProposal:
+        targets = self.resolve_targets(request_text)
+        if not targets:
+            targets = all_goals()[:3]
+
+        ci_targets = [g.ci_id for g in targets]
+        deps = sorted({dep for g in targets for dep in g.dependencies})
+        layers = sorted({g.layer for g in targets})
+        human_gate_required, human_gate_reasons = self.requires_human_gate(targets, impact_score)
+
+        implementation = [
+            ImplementationPhase(
+                label=self.settings.playbooks.automated_phase_label,
+                detail=f"Build registry-linked artifacts for {', '.join(ci_targets)} and generate proposal/package scaffolds."
+            ),
+            ImplementationPhase(
+                label=self.settings.playbooks.human_gate_phase_label,
+                detail="Review governance-sensitive modules, domain restrictions, and deployment scope before execution."
+            ),
+            ImplementationPhase(
+                label=self.settings.playbooks.audit_stamp_phase_label,
+                detail="Emit signed JSON artifact for NFT + ZK anchor + Arweave-compatible archival lineage."
+            ),
+        ]
+
+        proposal = EvolutionProposal(
+            proposed_by=self.settings.agents.strategist_node,
+            capability=request_text.strip(),
+            layer=" + ".join(layers),
+            trigger="Gap, threat, or portfolio expansion request routed through OODA governance.",
+            description=(
+                "This proposal converts a capability request into a governed build plan mapped to CI targets, "
+                "dependencies, sovereign layers, and execution controls."
+            ),
+            ci_targets=ci_targets,
+            dependencies=deps,
+            human_gate_required=human_gate_required,
+            human_gate_reasons=human_gate_reasons,
+            implementation=implementation,
+            payoff_delta=self.estimate_payoff(targets),
+            codex_tag=self.settings.codex_tag,
+            created_at=datetime.now(UTC).isoformat(),
+        )
+        proposal.proof_hash = self._proof_hash(proposal)
+        return proposal
+
+    def _proof_hash(self, proposal: EvolutionProposal) -> str:
+        payload = str(asdict(proposal)).encode("utf-8")
+        return sha256(payload).hexdigest()# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-PROPOSAL-GENERATOR]
+
+import argparse
+import json
+from dataclasses import asdict
+
+from config.settings import WarLabSettings
+from agents.agent_orchestrator import WarLabOrchestrator
+
+
+def to_markdown(proposal: dict) -> str:
+    phases = "
+".join(
+        f"  Phase {idx + 1} [{phase['label']}]: {phase['detail']}"
+        for idx, phase in enumerate(proposal["implementation"])
+    )
+    reasons = ", ".join(proposal["human_gate_reasons"]) if proposal["human_gate_reasons"] else "None"
+
+    return f"""--------------------------------------------------
+CODEX EVOLUTION PROPOSAL
+Proposed By: {proposal['proposed_by']}
+CAPABILITY: {proposal['capability']}
+LAYER: {proposal['layer']}
+TRIGGER: {proposal['trigger']}
+DESCRIPTION: {proposal['description']}
+CI TARGETS: {", ".join(proposal['ci_targets'])}
+DEPENDENCIES: {", ".join(proposal['dependencies']) if proposal['dependencies'] else "None"}
+HUMAN GATE REQUIRED: {proposal['human_gate_required']}
+HUMAN GATE REASONS: {reasons}
+IMPLEMENTATION:
+{phases}
+PAYOFF DELTA: Shield Score +{proposal['payoff_delta']['shield_score']} | Vault Shards +{proposal['payoff_delta']['vault_shards']} | Neural Peers +{proposal['payoff_delta']['neural_peers']}
+PROOF HASH: {proposal['proof_hash']}
+--------------------------------------------------
+RULE: The War Lab never reaches final form. Evolution = sovereignty.
+
+[CODEX-TAG: {proposal['codex_tag']}]
+"""
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate a Codex Evolution Proposal.")
+    parser.add_argument("capability", type=str, help="Requested capability or build objective")
+    parser.add_argument("--impact-score", type=float, default=4.0, help="Estimated impact score")
+    parser.add_argument("--format", choices=["json", "md"], default="md")
+    parser.add_argument("--output", type=str, default="")
+    args = parser.parse_args()
+
+    settings = WarLabSettings()
+    orchestrator = WarLabOrchestrator(settings=settings)
+    proposal = orchestrator.build_proposal(args.capability, impact_score=args.impact_score)
+    payload = asdict(proposal)
+
+    rendered = json.dumps(payload, indent=2) if args.format == "json" else to_markdown(payload)
+
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(rendered)
+    else:
+        print(rendered)
+
+
+if __name__ == "__main__":
+    main()
