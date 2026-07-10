@@ -1,0 +1,266 @@
+# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-SENTINEL]
+
+from dataclasses import dataclass, asdict
+from typing import Dict, List
+
+
+@dataclass
+class SentinelReport:
+    score: float
+    severity: str
+    domains: List[str]
+    indicators: List[str]
+    rationale: str
+
+
+class SentinelNode:
+    KEYWORDS: Dict[str, Dict[str, object]] = {
+        "wallet": {"score": 0.72, "domain": "FINANCIAL", "indicator": "wallet_drift"},
+        "drift": {"score": 0.60, "domain": "FINANCIAL", "indicator": "cross_mesh_drift"},
+        "supply": {"score": 0.78, "domain": "SUPPLY_CHAIN", "indicator": "vendor_anomaly"},
+        "quantum": {"score": 0.83, "domain": "HNDL", "indicator": "classical_crypto_exposure"},
+        "bio": {"score": 0.93, "domain": "BIO", "indicator": "bio_signal"},
+        "space": {"score": 0.94, "domain": "SPACE", "indicator": "orbital_signal"},
+        "weapon": {"score": 0.96, "domain": "WEAPONS", "indicator": "weapons_control_path"},
+        "navigation": {"score": 0.95, "domain": "NAVIGATION", "indicator": "nav_fault"},
+        "crypto_key": {"score": 0.97, "domain": "CRYPTO_KEY", "indicator": "key_fault"},
+        "red team": {"score": 0.88, "domain": "RED_TEAM", "indicator": "high_grade_test"},
+    }
+
+    def analyze(self, threat_input: str) -> SentinelReport:
+        text = threat_input.lower()
+        score = 0.18
+        domains: List[str] = []
+        indicators: List[str] = []
+
+        for keyword, meta in self.KEYWORDS.items():
+            if keyword in text:
+                score = max(score, float(meta["score"]))
+                domains.append(str(meta["domain"]))
+                indicators.append(str(meta["indicator"]))
+
+        severity = "LOW"
+        if score >= 0.90:
+            severity = "CRITICAL"
+        elif score >= 0.75:
+            severity = "HIGH"
+        elif score >= 0.50:
+            severity = "MEDIUM"
+
+        rationale = f"Detected {len(indicators)} indicator(s) from lexical triage."
+        return SentinelReport(
+            score=round(score, 2),
+            severity=severity,
+            domains=sorted(set(domains)),
+            indicators=sorted(set(indicators)),
+            rationale=rationale,
+        )
+
+    def as_dict(self, threat_input: str) -> Dict:
+        return asdict(self.analyze(threat_input))# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-STRATEGIST]
+
+from dataclasses import dataclass, asdict
+from typing import Dict, List
+
+from neural_fabric.nodes.sentinel import SentinelReport
+
+
+@dataclass
+class StrategistCOA:
+    primary_coa: str
+    kill_chain_stage: str
+    mitre_tags: List[str]
+    ci_targets: List[str]
+    rationale: str
+
+
+class StrategistNode:
+    def plan(self, threat_input: str, sentinel: SentinelReport) -> StrategistCOA:
+        text = threat_input.lower()
+        mitre_tags: List[str] = []
+        ci_targets: List[str] = ["CI-003"]
+
+        if "supply" in text:
+            mitre_tags.append("T1195")
+            ci_targets.append("CI-024")
+        if "quantum" in text or "crypto" in text:
+            mitre_tags.append("T1552")
+            ci_targets.extend(["CI-001", "CI-014"])
+        if "space" in text:
+            mitre_tags.append("T1583")
+            ci_targets.append("CI-027")
+        if "bio" in text:
+            mitre_tags.append("T1595")
+            ci_targets.append("CI-032")
+        if "wallet" in text:
+            mitre_tags.append("T1649")
+            ci_targets.append("CI-030")
+        if "red team" in text:
+            mitre_tags.append("T1592")
+            ci_targets.append("CI-010")
+
+        kill_chain_stage = "reconnaissance"
+        if sentinel.severity in {"HIGH", "CRITICAL"}:
+            kill_chain_stage = "actions-on-objectives"
+
+        primary_coa = "contain-observe-harden"
+        if "space" in sentinel.domains or "bio" in sentinel.domains:
+            primary_coa = "escalate-isolate-govern"
+        elif "CRYPTO_KEY" in sentinel.domains:
+            primary_coa = "rotate-freeze-attest"
+
+        return StrategistCOA(
+            primary_coa=primary_coa,
+            kill_chain_stage=kill_chain_stage,
+            mitre_tags=sorted(set(mitre_tags)),
+            ci_targets=sorted(set(ci_targets)),
+            rationale=f"COA selected from sentinel severity={sentinel.severity} and mapped domains.",
+        )
+
+    def as_dict(self, threat_input: str, sentinel: SentinelReport) -> Dict:
+        return asdict(self.plan(threat_input, sentinel))# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-ARCHIVIST]
+
+from dataclasses import dataclass, asdict
+from datetime import UTC, datetime
+from hashlib import sha256
+from typing import Dict, List
+
+from neural_fabric.nodes.sentinel import SentinelReport
+from neural_fabric.nodes.strategist import StrategistCOA
+
+
+@dataclass
+class ArchivistRecord:
+    memory_id: str
+    proof_hash: str
+    evidence_refs: List[str]
+    lineage_note: str
+    created_at: str
+
+
+class ArchivistNode:
+    def preserve(self, threat_input: str, sentinel: SentinelReport, strategist: StrategistCOA) -> ArchivistRecord:
+        seed = f"{threat_input}|{sentinel.score}|{strategist.primary_coa}|{strategist.ci_targets}"
+        proof_hash = sha256(seed.encode("utf-8")).hexdigest()
+        memory_id = f"mem-{proof_hash[:12]}"
+        evidence_refs = [f"evidence://{tag.lower()}" for tag in strategist.ci_targets[:3]]
+        return ArchivistRecord(
+            memory_id=memory_id,
+            proof_hash=proof_hash,
+            evidence_refs=evidence_refs,
+            lineage_note="Bound proposal context to memory, proof, and CI lineage.",
+            created_at=datetime.now(UTC).isoformat(),
+        )
+
+    def as_dict(self, threat_input: str, sentinel: SentinelReport, strategist: StrategistCOA) -> Dict:
+        return asdict(self.preserve(threat_input, sentinel, strategist))# CodexImmortal Agentic AI NFT War Lab
+# Author: Caleb Fedor Byker Konev | 10/27/1998
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-EXECUTOR]
+
+from dataclasses import dataclass, asdict
+from typing import Dict, List
+
+from neural_fabric.nodes.archivist import ArchivistRecord
+from neural_fabric.nodes.sentinel import SentinelReport
+from neural_fabric.nodes.strategist import StrategistCOA
+
+
+NEVER_AUTOMATED = {
+    "WEAPONS",
+    "NAVIGATION",
+    "CRYPTO_KEY",
+    "FIRE_CONTROL",
+    "COMMS_CRYPTO",
+    "AUTONOMOUS_UAS",
+}
+
+
+@dataclass
+class ExecutorPlan:
+    phase: str
+    actions: List[str]
+    human_gate_required: bool
+    human_gate_reasons: List[str]
+    audit_targets: List[str]
+
+
+class ExecutorNode:
+    def execute_plan(
+        self,
+        threat_input: str,
+        sentinel: SentinelReport,
+        strategist: StrategistCOA,
+        archivist: ArchivistRecord,
+    ) -> ExecutorPlan:
+        reasons: List[str] = []
+        actions = ["collect-evidence", "update-threat-board", "prepare-attestation"]
+
+        for domain in sentinel.domains:
+            if domain in NEVER_AUTOMATED:
+                reasons.append(f"never_automated:{domain}")
+
+        if sentinel.score > 0.85:
+            reasons.append("score>0.85")
+        if "SPACE" in sentinel.domains:
+            reasons.append("domain:SPACE")
+        if "BIO" in sentinel.domains:
+            reasons.append("domain:BIO")
+        if "RED_TEAM" in sentinel.domains:
+            reasons.append("domain:RED_TEAM")
+
+        phase = "AUTOMATED"
+        if reasons:
+            phase = "HUMAN GATE"
+            actions.append("pause-for-approval")
+        else:
+            actions.append("proceed-with-contained-automation")
+
+        actions.append(f"bind-memory:{archivist.memory_id}")
+        return ExecutorPlan(
+            phase=phase,
+            actions=actions,
+            human_gate_required=phase == "HUMAN GATE",
+            human_gate_reasons=sorted(set(reasons)),
+            audit_targets=["NFT_VAULT", "ARCHIVIST_LOG", "THREAT_BOARD"],
+        )
+
+    def as_dict(
+        self,
+        threat_input: str,
+        sentinel: SentinelReport,
+        strategist: StrategistCOA,
+        archivist: ArchivistRecord,
+    ) -> Dict:
+        return asdict(self.execute_plan(threat_input, sentinel, strategist, archivist))# CodexImmortal Agentic AI NFT War Lab
+# [CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-RUNNER-PATCH]
+
+from dataclasses import asdict
+
+from neural_fabric.nodes.archivist import ArchivistNode
+from neural_fabric.nodes.executor import ExecutorNode
+from neural_fabric.nodes.sentinel import SentinelNode
+from neural_fabric.nodes.strategist import StrategistNode
+
+self.sentinel = SentinelNode()
+self.strategist = StrategistNode()
+self.archivist = ArchivistNode()
+self.executor = ExecutorNode()
+
+sentinel_report = self.sentinel.analyze(threat_input)
+strategist_coa = self.strategist.plan(threat_input, sentinel_report)
+archivist_record = self.archivist.preserve(threat_input, sentinel_report, strategist_coa)
+executor_plan = self.executor.execute_plan(threat_input, sentinel_report, strategist_coa, archivist_record)
+
+state["sentinel_report"] = asdict(sentinel_report)
+state["strategist_coa"] = asdict(strategist_coa)
+state["archivist_memory"] = asdict(archivist_record)
+state["executor_plan"] = asdict(executor_plan)
+state["nft_evidence_refs"] = archivist_record.evidence_refs
+state["human_gate_required"] = executor_plan.human_gate_required
+state["ci_targets"] = strategist_coa.ci_targets
