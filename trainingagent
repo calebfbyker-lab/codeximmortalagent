@@ -1,0 +1,300 @@
+## 1. Repo‑aware trainer agent (AGENTS.md loop)
+
+This agent reads the repo, learns local norms, and updates an `AGENTS.md` file so future agents perform better.[4][1]
+
+### Agent prompt (trainer)
+
+```ts
+export const TRAINER_PROMPT = `
+You are REPO_TRAINER, a coding agent that learns from this repository.
+
+GOAL
+- Maintain an AGENTS.md file at the repo root that helps other agents work effectively here.
+- Keep improving AGENTS.md based on:
+  - The current repository structure.
+  - Explicit feedback from humans (corrections, preferences).
+  - Observed failures in previous runs (as summarized for you).
+
+INPUTS YOU MAY RECEIVE
+- File trees, selected file contents.
+- Existing AGENTS.md content.
+- A list of "issues" from past agent runs (mistakes, misfits, regressions).
+
+OUTPUT
+- New contents for AGENTS.md in valid Markdown, including:
+  - "Codebase map": entrypoints, main directories, configs, test layout.
+  - "Local norms": naming conventions, style, patterns, do's/don'ts.
+  - "Self-correction": explicit instructions for future agents, e.g.
+    - How to update this file when the map is stale.
+    - How to encode new norms when humans correct behavior.
+
+RULES
+- Never claim to run code or tests; only describe commands.
+- Be concise; optimize for navigation and correctness.
+- If you discover contradictions or obsolete info, fix them.
+`;
+```
+
+### Trainer container (Dockerfile)
+
+```dockerfile
+# trainer.Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /repo
+
+RUN pip install --no-cache-dir openai
+
+COPY trainer_agent.py .
+
+CMD ["python", "trainer_agent.py"]
+```
+
+### Trainer script (outline)
+
+```python
+# trainer_agent.py
+import os, json, subprocess
+from pathlib import Path
+from openai import OpenAI
+
+client = OpenAI()
+
+REPO_ROOT = Path("/repo")
+
+def get_repo_snapshot():
+    tree = subprocess.check_output(["find", ".", "-maxdepth", "3", "-type", "f"]).decode()
+    important_files = []
+    for name in ["README", "pyproject.toml", "package.json", "AGENTS.md"]:
+        important_files += [str(p) for p in REPO_ROOT.rglob(name)]
+    contents = {}
+    for path in important_files:
+        p = REPO_ROOT / path
+        if p.exists() and p.is_file():
+            contents[path] = p.read_text()[:4000]
+    return tree, contents
+
+def call_trainer_agent(tree, contents, issues):
+    messages = [
+        {"role": "system", "content": TRAINER_PROMPT},
+        {"role": "user", "content": json.dumps({
+            "file_tree": tree,
+            "files": contents,
+            "issues": issues
+        })}
+    ]
+    resp = client.chat.completions.create(
+        model="gpt-5.1",
+        messages=messages
+    )
+    return resp.choices[0].message.content
+
+if __name__ == "__main__":
+    issues = []  # TODO: load from previous runs, e.g. JSON log
+    tree, contents = get_repo_snapshot()
+    new_agents_md = call_trainer_agent(tree, contents, issues)
+    (REPO_ROOT / "AGENTS.md").write_text(new_agents_md)
+    print("AGENTS.md updated.")
+```
+
+Bind‑mount your repo into `/repo` when you run this container.
+
+***
+
+## 2. IDE / Dev agent container
+
+A second container acts as a **code‑editing agent** that reads `AGENTS.md`, the codebase, and suggested tasks, then modifies files and runs tests.[6][3][5]
+
+### Dev agent prompt
+
+```ts
+export const DEV_AGENT_PROMPT = `
+You are DEV_AGENT, a repo-aware coding agent.
+
+CONTEXT
+- You are operating on a checked-out Git repository.
+- AGENTS.md at the root encodes the codebase map and local norms. Read it first.
+- You can:
+  - Read and write files.
+  - Suggest shell commands (build, test, lint), but not execute them yourself.
+
+GOAL
+- Given a SPEC and task list, implement changes that:
+  - Respect AGENTS.md norms.
+  - Compile and pass tests (you must describe how to run them).
+
+OUTPUT
+- Describe planned edits (file paths, high-level changes).
+- Then output concrete diffs (unified diff format) or full file contents.
+- Always end with:
+  - "Test plan": exact commands the human (or an external runner) should execute.
+`;
+```
+
+### Dev agent Dockerfile
+
+```dockerfile
+# dev_agent.Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /repo
+
+RUN pip install --no-cache-dir openai
+
+COPY dev_agent.py .
+
+CMD ["python", "dev_agent.py"]
+```
+
+You can wire this into an IDE (e.g., VS Code, Cursor) using a simple HTTP wrapper or CLI that calls `dev_agent.py` and applies the diffs inside the host editor.[7][5][6]
+
+***
+
+## 3. Self‑evolving optimization loop
+
+A third process periodically **evaluates** agent performance (tests, metrics, human feedback) and uses an optimization prompt to adjust prompts or configuration, similar to published self‑evolving agents.[2][4]
+
+### Optimization prompt (meta‑agent)
+
+```ts
+export const META_PROMPT = `
+You are META_TUNER, responsible for improving the prompts and configs of REPO_TRAINER and DEV_AGENT.
+
+INPUT
+- Current prompts/config for each agent.
+- Evaluation data from recent runs:
+  - Test results (pass/fail).
+  - Human feedback snippets.
+  - Structured issues (e.g., "ignored AGENTS.md section", "touched wrong directory").
+
+GOAL
+- Suggest small, safe changes to the prompts or config that would:
+  - Reduce repeated mistakes.
+  - Make better use of AGENTS.md.
+  - Clarify test expectations.
+
+OUTPUT
+- A JSON object:
+  {
+    "trainer_prompt_patch": "string instructions to append or modify",
+    "dev_prompt_patch": "string instructions to append or modify",
+    "notes": "short rationale"
+  }
+
+RULES
+- Never remove safety constraints.
+- Prefer additive clarifications over full rewrites.
+- Keep patches short and concrete.
+`;
+```
+
+### Simple self‑evolving controller (Python)
+
+```python
+# optimizer_loop.py
+import json
+from openai import OpenAI
+from pathlib import Path
+
+client = OpenAI()
+
+PROMPTS_DIR = Path("/repo/prompts")
+
+def load_prompt(name: str) -> str:
+    return (PROMPTS_DIR / f"{name}.txt").read_text()
+
+def save_prompt(name: str, text: str):
+    (PROMPTS_DIR / f"{name}.txt").write_text(text)
+
+def get_eval_data():
+    # Stub: load JSON with issues, test results, feedback
+    path = Path("/repo/.agent-eval/evals.json")
+    if path.exists():
+        return json.loads(path.read_text())
+    return {}
+
+def call_meta(trainer_prompt, dev_prompt, eval_data):
+    messages = [
+        {"role": "system", "content": META_PROMPT},
+        {"role": "user", "content": json.dumps({
+            "trainer_prompt": trainer_prompt,
+            "dev_prompt": dev_prompt,
+            "eval_data": eval_data
+        })}
+    ]
+    resp = client.chat.completions.create(
+        model="gpt-5.1",
+        messages=messages
+    )
+    return json.loads(resp.choices[0].message.content)
+
+if __name__ == "__main__":
+    trainer = load_prompt("trainer")
+    dev = load_prompt("dev")
+    eval_data = get_eval_data()
+
+    patches = call_meta(trainer, dev, eval_data)
+
+    trainer_new = trainer + "\n\n# PATCH\n" + patches["trainer_prompt_patch"]
+    dev_new = dev + "\n\n# PATCH\n" + patches["dev_prompt_patch"]
+
+    save_prompt("trainer", trainer_new)
+    save_prompt("dev", dev_new)
+
+    print("Prompts updated:", patches.get("notes", ""))
+```
+
+You can run this periodically via a CI job or cron in a container, using Docker Compose or Kubernetes to orchestrate all three pieces.[3][8]
+
+***
+
+## 4. Docker Compose: end‑to‑end local stack
+
+```yaml
+# docker-compose.yml
+version: "3.9"
+services:
+  trainer:
+    build:
+      context: .
+      dockerfile: trainer.Dockerfile
+    volumes:
+      - ./:/repo
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  dev_agent:
+    build:
+      context: .
+      dockerfile: dev_agent.Dockerfile
+    volumes:
+      - ./:/repo
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  optimizer:
+    build:
+      context: .
+      dockerfile: trainer.Dockerfile
+    command: ["python", "optimizer_loop.py"]
+    volumes:
+      - ./:/repo
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+```
+
+Typical loop:
+
+1. Run **trainer** to refresh `AGENTS.md`.  
+2. Use **dev_agent** (via IDE or CLI) to implement changes; tests run on host/CI.  
+3. Log eval results to `.agent-eval/evals.json`.  
+4. Run **optimizer** to patch prompts and gradually improve behavior.[5][1][2][4]
+
+***
+
+## 5. Next steps for you
+
+- Decide which repo to start with and add `AGENTS.md`, `prompts/trainer.txt`, `prompts/dev.txt`.  
+- Wire your IDE (VS Code / Cursor) to call the `dev_agent` container for “agentic” tasks.  
+- Start logging evals (test runs + your feedback) so the optimizer has real signals to learn from.
+
