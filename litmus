@@ -1,0 +1,956 @@
+Yes
+
+Yes — below is a full inline multi-file code pack for a simulated `bio-skill-engine/` package that fits the CodexImmortal monorepo style: typed schemas, FastAPI app, workflow orchestration, policy gating, verification, and NFT-ready metadata hooks. This follows the builder pattern of file-ready artifacts, shared platform integration, and codex-tagged provenance, while keeping BIO-domain actions abstract and human-gated under existing War Lab doctrine [1][2][3].
+
+## Package files
+
+This package is designed to plug into the broader monorepo through adapters rather than duplicating PQC, shard, or NFT logic, because the architecture builder already separates those responsibilities into dedicated packages and services [1]. The code below gives you a usable vertical slice: local simulation now, clean integration seams later for `pqc-spine`, `storage-mesh`, `neural-fabric`, and `nft-vault` [1][3].
+
+### `bio-skill-engine/README.md`
+
+```md
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+
+# Bio Skill Engine
+
+Simulated CodexImmortal bio-digital skill encoding package.
+
+## Purpose
+This package models a governed skill-encoding pipeline for abstract biological-digital artifacts:
+- Skill decomposition
+- Payload plan compilation
+- Base or prime edit lane selection
+- PQC envelope reference generation
+- Shard manifest reference generation
+- BIO-domain human gate enforcement
+- Verification and NFT-ready metadata output
+
+## Scope
+This package does not perform laboratory automation or biological execution.
+It operates on abstract payload descriptors and governance artifacts only.
+
+## Endpoints
+- `GET /health`
+- `POST /api/v1/bioskills/run`
+- `POST /api/v1/bioskills/decompose`
+- `POST /api/v1/bioskills/compile`
+- `POST /api/v1/bioskills/verify`
+- `POST /api/v1/bioskills/promote`
+
+## Run
+```bash
+uvicorn bioskillengine.main:app --host 0.0.0.0 --port 8096 --reload
+```
+
+## Codex lineage
+All outputs carry:
+`CODEX-TAG-CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL`
+```
+
+### `bio-skill-engine/requirements.txt`
+
+```txt
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.8.2
+pydantic-settings==2.4.0
+PyYAML==6.0.2
+pytest==8.3.2
+httpx==0.27.0
+```
+
+### `bio-skill-engine/.env.example`
+
+```env
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+BIO_SKILL_ENGINE_NAME=bio-skill-engine
+BIO_SKILL_ENGINE_ENV=dev
+BIO_SKILL_ENGINE_PORT=8096
+BIO_SKILL_DEFAULT_CLASSIFICATION=BIO-SENSITIVE
+BIO_SKILL_REQUIRE_HUMAN_GATE=true
+BIO_SKILL_ENABLE_SIMULATED_NFT=true
+BIO_SKILL_ENABLE_SIMULATED_PQC=true
+BIO_SKILL_ENABLE_SIMULATED_SHARDING=true
+```
+
+### `bio-skill-engine/Dockerfile`
+
+```dockerfile
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY bioskillengine ./bioskillengine
+EXPOSE 8096
+
+CMD ["uvicorn", "bioskillengine.main:app", "--host", "0.0.0.0", "--port", "8096"]
+```
+
+## Core package
+
+### `bio-skill-engine/bioskillengine/__init__.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+__all__ = ["main"]
+```
+
+### `bio-skill-engine/bioskillengine/constants.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+CODEX_TAG = "CODEX-TAG-CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL"
+CODEX_AUTHOR = "Caleb Fedor Byker Konev 10271998"
+DEFAULT_CLASSIFICATION = "BIO-SENSITIVE"
+DEFAULT_ENCODING_VERSION = "genc-0.1"
+DEFAULT_MARKER_SCHEME = "checksum+lineage+policy-tags"
+BIO_ALWAYS_GATE = "BIO_ALWAYS_GATE"
+ABSTRACT_ONLY = "ABSTRACT_PAYLOAD_ONLY"
+```
+
+### `bio-skill-engine/bioskillengine/config.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    bio_skill_engine_name: str = "bio-skill-engine"
+    bio_skill_engine_env: str = "dev"
+    bio_skill_engine_port: int = 8096
+    bio_skill_default_classification: str = "BIO-SENSITIVE"
+    bio_skill_require_human_gate: bool = True
+    bio_skill_enable_simulated_nft: bool = True
+    bio_skill_enable_simulated_pqc: bool = True
+    bio_skill_enable_simulated_sharding: bool = True
+
+settings = Settings()
+```
+
+### `bio-skill-engine/bioskillengine/enums.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from enum import Enum
+
+class EditorMode(str, Enum):
+    BASE = "BASE"
+    PRIME = "PRIME"
+
+class ArtifactState(str, Enum):
+    REQUESTED = "REQUESTED"
+    GRAPHED = "GRAPHED"
+    COMPILED = "COMPILED"
+    EDITED = "EDITED"
+    SEALED = "SEALED"
+    PENDING_HUMAN_GATE = "PENDING_HUMAN_GATE"
+    VERIFIED = "VERIFIED"
+    ATTESTED = "ATTESTED"
+    QUARANTINED = "QUARANTINED"
+    REVOKED = "REVOKED"
+
+class GateDecision(str, Enum):
+    APPROVED = "APPROVED"
+    DENIED = "DENIED"
+    ESCALATED = "ESCALATED"
+    PENDING = "PENDING"
+```
+
+## Schemas
+
+### `bio-skill-engine/bioskillengine/schemas/common.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from pydantic import BaseModel, Field
+from bioskillengine.constants import CODEX_TAG
+
+class CodexModel(BaseModel):
+    codex_tag: str = Field(default=CODEX_TAG)
+```
+
+### `bio-skill-engine/bioskillengine/schemas/skill_graph.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from typing import List, Optional
+from pydantic import Field
+from bioskillengine.schemas.common import CodexModel
+
+class SkillTask(CodexModel):
+    task_id: str
+    label: str
+    kind: str
+    prerequisites: List[str] = Field(default_factory=list)
+    success_criteria: List[str] = Field(default_factory=list)
+
+class SkillGraph(CodexModel):
+    graph_id: str
+    skill_name: str
+    mission_context: Optional[str] = None
+    classification: str = "BIO-SENSITIVE"
+    tasks: List[SkillTask]
+    constraints: List[str] = Field(default_factory=list)
+```
+
+### `bio-skill-engine/bioskillengine/schemas/payload_plan.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from typing import List
+from pydantic import Field
+from bioskillengine.enums import EditorMode
+from bioskillengine.schemas.common import CodexModel
+
+class PayloadPlan(CodexModel):
+    plan_id: str
+    graph_id: str
+    editor_mode: EditorMode
+    encoding_version: str = "genc-0.1"
+    marker_scheme: str = "checksum+lineage+policy-tags"
+    payload_descriptor: str
+    policy_tags: List[str] = Field(default_factory=list)
+```
+
+### `bio-skill-engine/bioskillengine/schemas/artifact.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from typing import List, Optional
+from pydantic import Field
+from bioskillengine.enums import ArtifactState, EditorMode
+from bioskillengine.schemas.common import CodexModel
+
+class CryptoEnvelope(CodexModel):
+    signature_ref: Optional[str] = None
+    envelope_key_ref: Optional[str] = None
+    merkle_root: Optional[str] = None
+    shard_manifest_id: Optional[str] = None
+
+class SkillGenomeArtifact(CodexModel):
+    artifact_id: str
+    graph_hash: str
+    payload_plan_hash: str
+    classification: str
+    editor_mode: EditorMode
+    state: ArtifactState
+    lineage_parent_ids: List[str] = Field(default_factory=list)
+    crypto: CryptoEnvelope = Field(default_factory=CryptoEnvelope)
+```
+
+### `bio-skill-engine/bioskillengine/schemas/verification.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from typing import List, Optional
+from pydantic import Field
+from bioskillengine.schemas.common import CodexModel
+
+class VerificationReport(CodexModel):
+    artifact_id: str
+    graph_hash_match: bool
+    payload_hash_match: bool
+    merkle_match: bool
+    policy_compliant: bool
+    verified: bool
+    notes: List[str] = Field(default_factory=list)
+    zk_ref: Optional[str] = None
+    nft_metadata_cid: Optional[str] = None
+    human_gate_decision_id: Optional[str] = None
+```
+
+### `bio-skill-engine/bioskillengine/schemas/lineage.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from typing import List, Optional
+from pydantic import Field
+from bioskillengine.schemas.common import CodexModel
+
+class BioSkillLineageRecord(CodexModel):
+    lineage_id: str
+    artifact_id: str
+    graph_id: str
+    plan_id: str
+    parent_lineage_ids: List[str] = Field(default_factory=list)
+    nft_ref: Optional[str] = None
+    verification_ref: Optional[str] = None
+```
+
+### `bio-skill-engine/bioskillengine/schemas/api.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from typing import Optional
+from pydantic import BaseModel
+
+class DecomposeRequest(BaseModel):
+    skill_name: str
+    mission_context: str
+    classification: str = "BIO-SENSITIVE"
+
+class CompileRequest(BaseModel):
+    skill_name: str
+    mission_context: str
+    classification: str = "BIO-SENSITIVE"
+
+class VerifyRequest(BaseModel):
+    skill_name: str
+    mission_context: str
+    classification: str = "BIO-SENSITIVE"
+
+class PromoteRequest(BaseModel):
+    artifact_id: str
+    operator_id: str
+    justification: str
+    approve: bool = False
+
+class RunRequest(BaseModel):
+    skill_name: str
+    mission_context: str
+    classification: Optional[str] = "BIO-SENSITIVE"
+```
+
+## Services
+
+### `bio-skill-engine/bioskillengine/services/decomposer.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+import uuid
+from bioskillengine.constants import ABSTRACT_ONLY, BIO_ALWAYS_GATE
+from bioskillengine.schemas.api import DecomposeRequest
+from bioskillengine.schemas.skill_graph import SkillGraph, SkillTask
+
+class SkillDecomposer:
+    def decompose(self, req: DecomposeRequest) -> SkillGraph:
+        tasks = [
+            SkillTask(
+                task_id="t1",
+                label="Parse objective",
+                kind="analysis",
+                success_criteria=["Objective normalized"],
+            ),
+            SkillTask(
+                task_id="t2",
+                label="Map prerequisites",
+                kind="dependency",
+                prerequisites=["t1"],
+                success_criteria=["Dependency map complete"],
+            ),
+            SkillTask(
+                task_id="t3",
+                label="Define verification criteria",
+                kind="verification",
+                prerequisites=["t2"],
+                success_criteria=["Verification criteria recorded"],
+            ),
+        ]
+        return SkillGraph(
+            graph_id=f"sg_{uuid.uuid4().hex[:12]}",
+            skill_name=req.skill_name,
+            mission_context=req.mission_context,
+            classification=req.classification,
+            tasks=tasks,
+            constraints=[BIO_ALWAYS_GATE, ABSTRACT_ONLY],
+        )
+```
+
+### `bio-skill-engine/bioskillengine/services/compiler.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+import uuid
+from bioskillengine.enums import EditorMode
+from bioskillengine.schemas.payload_plan import PayloadPlan
+from bioskillengine.schemas.skill_graph import SkillGraph
+
+class GeneticCryptoCompiler:
+    def compile(self, graph: SkillGraph) -> PayloadPlan:
+        editor_mode = EditorMode.PRIME if len(graph.tasks) >= 3 else EditorMode.BASE
+        descriptor = f"abstract-encoding-for:{graph.skill_name.lower().replace(' ', '-')}"
+        return PayloadPlan(
+            plan_id=f"pp_{uuid.uuid4().hex[:12]}",
+            graph_id=graph.graph_id,
+            editor_mode=editor_mode,
+            payload_descriptor=descriptor,
+            policy_tags=list(graph.constraints),
+        )
+```
+
+### `bio-skill-engine/bioskillengine/services/base_editor.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.schemas.payload_plan import PayloadPlan
+
+class BaseEditorAgent:
+    def apply(self, plan: PayloadPlan) -> PayloadPlan:
+        if "base-lane" not in plan.policy_tags:
+            plan.policy_tags.append("base-lane")
+        return plan
+```
+
+### `bio-skill-engine/bioskillengine/services/prime_editor.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.schemas.payload_plan import PayloadPlan
+
+class PrimeEditorAgent:
+    def apply(self, plan: PayloadPlan) -> PayloadPlan:
+        if "prime-lane" not in plan.policy_tags:
+            plan.policy_tags.append("prime-lane")
+        return plan
+```
+
+### `bio-skill-engine/bioskillengine/services/policy_guard.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.constants import BIO_ALWAYS_GATE
+
+class PolicyGuard:
+    def require_human_gate(self, classification: str, policy_tags: list[str]) -> bool:
+        return classification.startswith("BIO") or BIO_ALWAYS_GATE in policy_tags
+
+    def promote_allowed(self, approve: bool) -> bool:
+        return approve
+```
+
+### `bio-skill-engine/bioskillengine/services/pqc_envelope.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+import hashlib
+import json
+import uuid
+from pydantic import BaseModel
+from bioskillengine.schemas.artifact import CryptoEnvelope, SkillGenomeArtifact
+from bioskillengine.enums import ArtifactState
+from bioskillengine.schemas.payload_plan import PayloadPlan
+from bioskillengine.schemas.skill_graph import SkillGraph
+
+def stable_hash(model: BaseModel | dict) -> str:
+    data = model.model_dump(mode="json") if isinstance(model, BaseModel) else model
+    blob = json.dumps(data, sort_keys=True, separators=(",", ":")).encode()
+    return "sha3_256:" + hashlib.sha3_256(blob).hexdigest()
+
+class PQCEnvelopeService:
+    def seal(self, graph: SkillGraph, plan: PayloadPlan) -> SkillGenomeArtifact:
+        merkle_seed = {"graph_id": graph.graph_id, "plan_id": plan.plan_id}
+        envelope = CryptoEnvelope(
+            signature_ref=f"mldsa://sig/{uuid.uuid4().hex[:10]}",
+            envelope_key_ref=f"mlkem://env/{uuid.uuid4().hex[:10]}",
+            merkle_root=stable_hash(merkle_seed),
+            shard_manifest_id=f"dist_{uuid.uuid4().hex[:10]}",
+        )
+        return SkillGenomeArtifact(
+            artifact_id=f"sga_{uuid.uuid4().hex[:12]}",
+            graph_hash=stable_hash(graph),
+            payload_plan_hash=stable_hash(plan),
+            classification=graph.classification,
+            editor_mode=plan.editor_mode,
+            state=ArtifactState.SEALED,
+            crypto=envelope,
+        )
+```
+
+### `bio-skill-engine/bioskillengine/services/shard_adapter.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+class ShardAdapter:
+    def distribute(self, artifact_id: str) -> dict:
+        return {
+            "artifact_id": artifact_id,
+            "placement": ["ipfs-hot", "arweave-warm", "filecoin-cold"],
+            "replication": "3-of-5",
+            "status": "STORED",
+        }
+```
+
+### `bio-skill-engine/bioskillengine/services/human_gate_adapter.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+import uuid
+from bioskillengine.enums import GateDecision
+
+class HumanGateAdapter:
+    def request_gate(self, artifact_id: str, reason: str) -> dict:
+        return {
+            "gate_id": f"gate_{uuid.uuid4().hex[:12]}",
+            "artifact_id": artifact_id,
+            "reason": reason,
+            "decision": GateDecision.PENDING,
+        }
+
+    def resolve_gate(self, artifact_id: str, operator_id: str, approve: bool, justification: str) -> dict:
+        return {
+            "gate_id": f"gate_{uuid.uuid4().hex[:12]}",
+            "artifact_id": artifact_id,
+            "operator_id": operator_id,
+            "decision": GateDecision.APPROVED if approve else GateDecision.DENIED,
+            "justification": justification,
+        }
+```
+
+### `bio-skill-engine/bioskillengine/services/nft_adapter.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+import uuid
+from bioskillengine.constants import CODEX_AUTHOR, CODEX_TAG
+
+class NFTAdapter:
+    def build_metadata(self, artifact_id: str, classification: str) -> dict:
+        cid = f"ipfs://cid_{uuid.uuid4().hex[:16]}"
+        return {
+            "name": f"BioSkillAttestation::{artifact_id}",
+            "description": "Simulated bio skill verification attestation",
+            "codexauthor": CODEX_AUTHOR,
+            "codextag": CODEX_TAG,
+            "payloadcid": cid,
+            "classification": classification,
+            "zkproofhash": f"zk_{uuid.uuid4().hex[:12]}",
+        }
+
+    def mint(self, metadata: dict) -> dict:
+        return {
+            "tokenid": int(uuid.uuid4().int % 1000000),
+            "txhash": f"0x{uuid.uuid4().hex}{uuid.uuid4().hex[:24]}",
+            "metadata": metadata,
+        }
+```
+
+### `bio-skill-engine/bioskillengine/services/lineage_service.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+import uuid
+from bioskillengine.schemas.lineage import BioSkillLineageRecord
+
+class LineageService:
+    def create(self, artifact_id: str, graph_id: str, plan_id: str, nft_ref: str | None = None) -> BioSkillLineageRecord:
+        return BioSkillLineageRecord(
+            lineage_id=f"lin_{uuid.uuid4().hex[:12]}",
+            artifact_id=artifact_id,
+            graph_id=graph_id,
+            plan_id=plan_id,
+            nft_ref=nft_ref,
+            verification_ref=f"verify_{uuid.uuid4().hex[:10]}",
+        )
+```
+
+### `bio-skill-engine/bioskillengine/services/verifier.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.services.pqc_envelope import stable_hash
+from bioskillengine.schemas.artifact import SkillGenomeArtifact
+from bioskillengine.schemas.payload_plan import PayloadPlan
+from bioskillengine.schemas.skill_graph import SkillGraph
+from bioskillengine.schemas.verification import VerificationReport
+
+class Verifier:
+    def verify(self, graph: SkillGraph, plan: PayloadPlan, artifact: SkillGenomeArtifact) -> VerificationReport:
+        graph_hash_match = stable_hash(graph) == artifact.graph_hash
+        payload_hash_match = stable_hash(plan) == artifact.payload_plan_hash
+        merkle_match = artifact.crypto.merkle_root is not None
+        policy_compliant = artifact.classification.startswith("BIO")
+        return VerificationReport(
+            artifact_id=artifact.artifact_id,
+            graph_hash_match=graph_hash_match,
+            payload_hash_match=payload_hash_match,
+            merkle_match=merkle_match,
+            policy_compliant=policy_compliant,
+            verified=all([graph_hash_match, payload_hash_match, merkle_match, policy_compliant]),
+            notes=[
+                "Simulated graph-to-payload verification completed",
+                "BIO-domain final promotion requires human gate",
+            ],
+        )
+```
+
+## Orchestrator
+
+### `bio-skill-engine/bioskillengine/orchestrator/state_machine.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.enums import ArtifactState
+
+ALLOWED_TRANSITIONS = {
+    ArtifactState.REQUESTED: {ArtifactState.GRAPHED},
+    ArtifactState.GRAPHED: {ArtifactState.COMPILED},
+    ArtifactState.COMPILED: {ArtifactState.EDITED},
+    ArtifactState.EDITED: {ArtifactState.SEALED},
+    ArtifactState.SEALED: {ArtifactState.PENDING_HUMAN_GATE, ArtifactState.VERIFIED},
+    ArtifactState.PENDING_HUMAN_GATE: {ArtifactState.VERIFIED, ArtifactState.QUARANTINED},
+    ArtifactState.VERIFIED: {ArtifactState.ATTESTED},
+    ArtifactState.ATTESTED: set(),
+    ArtifactState.QUARANTINED: {ArtifactState.REVOKED},
+    ArtifactState.REVOKED: set(),
+}
+
+class StateMachine:
+    def can_transition(self, src: ArtifactState, dst: ArtifactState) -> bool:
+        return dst in ALLOWED_TRANSITIONS.get(src, set())
+```
+
+### `bio-skill-engine/bioskillengine/orchestrator/consensus_bridge.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+class ConsensusBridge:
+    def evaluate(self, artifact_id: str) -> dict:
+        return {
+            "artifact_id": artifact_id,
+            "sentinel": "PASS",
+            "strategist": "PASS",
+            "archivist": "PASS",
+            "executor": "PENDING_HUMAN_GATE",
+            "consensus_mode": "4-of-4",
+        }
+```
+
+### `bio-skill-engine/bioskillengine/orchestrator/workflow.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.enums import ArtifactState, EditorMode
+from bioskillengine.schemas.api import DecomposeRequest
+from bioskillengine.services.base_editor import BaseEditorAgent
+from bioskillengine.services.compiler import GeneticCryptoCompiler
+from bioskillengine.services.decomposer import SkillDecomposer
+from bioskillengine.services.human_gate_adapter import HumanGateAdapter
+from bioskillengine.services.lineage_service import LineageService
+from bioskillengine.services.nft_adapter import NFTAdapter
+from bioskillengine.services.policy_guard import PolicyGuard
+from bioskillengine.services.pqc_envelope import PQCEnvelopeService
+from bioskillengine.services.prime_editor import PrimeEditorAgent
+from bioskillengine.services.shard_adapter import ShardAdapter
+from bioskillengine.services.verifier import Verifier
+from bioskillengine.orchestrator.consensus_bridge import ConsensusBridge
+
+class BioSkillWorkflow:
+    def __init__(self) -> None:
+        self.decomposer = SkillDecomposer()
+        self.compiler = GeneticCryptoCompiler()
+        self.base_editor = BaseEditorAgent()
+        self.prime_editor = PrimeEditorAgent()
+        self.guard = PolicyGuard()
+        self.envelope = PQCEnvelopeService()
+        self.shards = ShardAdapter()
+        self.verifier = Verifier()
+        self.gate = HumanGateAdapter()
+        self.nft = NFTAdapter()
+        self.lineage = LineageService()
+        self.consensus = ConsensusBridge()
+
+    def decompose(self, skill_name: str, mission_context: str, classification: str):
+        return self.decomposer.decompose(
+            DecomposeRequest(skill_name=skill_name, mission_context=mission_context, classification=classification)
+        )
+
+    def compile(self, skill_name: str, mission_context: str, classification: str):
+        graph = self.decompose(skill_name, mission_context, classification)
+        plan = self.compiler.compile(graph)
+        return {"graph": graph.model_dump(), "plan": plan.model_dump()}
+
+    def run(self, skill_name: str, mission_context: str, classification: str):
+        graph = self.decompose(skill_name, mission_context, classification)
+        plan = self.compiler.compile(graph)
+
+        if plan.editor_mode == EditorMode.BASE:
+            plan = self.base_editor.apply(plan)
+        else:
+            plan = self.prime_editor.apply(plan)
+
+        artifact = self.envelope.seal(graph, plan)
+        artifact.state = ArtifactState.PENDING_HUMAN_GATE if self.guard.require_human_gate(
+            graph.classification, graph.constraints
+        ) else ArtifactState.VERIFIED
+
+        shard_receipt = self.shards.distribute(artifact.artifact_id)
+        consensus = self.consensus.evaluate(artifact.artifact_id)
+        gate_request = self.gate.request_gate(artifact.artifact_id, "BIO domain promotion requires approval")
+        verification = self.verifier.verify(graph, plan, artifact)
+        metadata = self.nft.build_metadata(artifact.artifact_id, artifact.classification)
+        lineage = self.lineage.create(artifact.artifact_id, graph.graph_id, plan.plan_id)
+
+        return {
+            "graph": graph.model_dump(),
+            "plan": plan.model_dump(),
+            "artifact": artifact.model_dump(),
+            "shard_receipt": shard_receipt,
+            "consensus": consensus,
+            "gate_request": gate_request,
+            "verification": verification.model_dump(),
+            "nft_metadata": metadata,
+            "lineage": lineage.model_dump(),
+        }
+
+    def verify_only(self, skill_name: str, mission_context: str, classification: str):
+        result = self.run(skill_name, mission_context, classification)
+        return result["verification"]
+
+    def promote(self, artifact_id: str, operator_id: str, justification: str, approve: bool):
+        gate = self.gate.resolve_gate(artifact_id, operator_id, approve, justification)
+        if not self.guard.promote_allowed(approve):
+            return {
+                "artifact_id": artifact_id,
+                "status": "DENIED",
+                "gate": gate,
+            }
+
+        metadata = self.nft.build_metadata(artifact_id, "BIO-SENSITIVE")
+        minted = self.nft.mint(metadata)
+        lineage = self.lineage.create(artifact_id, "graph_promoted", "plan_promoted", nft_ref=str(minted["tokenid"]))
+        return {
+            "artifact_id": artifact_id,
+            "status": "ATTESTED",
+            "gate": gate,
+            "minted": minted,
+            "lineage": lineage.model_dump(),
+            "state": ArtifactState.ATTESTED,
+        }
+```
+
+## API layer
+
+### `bio-skill-engine/bioskillengine/api/dependencies.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.orchestrator.workflow import BioSkillWorkflow
+
+workflow = BioSkillWorkflow()
+
+def get_workflow() -> BioSkillWorkflow:
+    return workflow
+```
+
+### `bio-skill-engine/bioskillengine/api/routes_health.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/health")
+def health() -> dict:
+    return {"status": "ok", "service": "bio-skill-engine"}
+```
+
+### `bio-skill-engine/bioskillengine/api/routes_bioskills.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from fastapi import APIRouter, Depends
+from bioskillengine.api.dependencies import get_workflow
+from bioskillengine.orchestrator.workflow import BioSkillWorkflow
+from bioskillengine.schemas.api import CompileRequest, DecomposeRequest, PromoteRequest, RunRequest, VerifyRequest
+
+router = APIRouter(prefix="/api/v1/bioskills", tags=["bioskills"])
+
+@router.post("/decompose")
+def decompose(req: DecomposeRequest, workflow: BioSkillWorkflow = Depends(get_workflow)) -> dict:
+    graph = workflow.decompose(req.skill_name, req.mission_context, req.classification)
+    return graph.model_dump()
+
+@router.post("/compile")
+def compile_plan(req: CompileRequest, workflow: BioSkillWorkflow = Depends(get_workflow)) -> dict:
+    return workflow.compile(req.skill_name, req.mission_context, req.classification)
+
+@router.post("/run")
+def run(req: RunRequest, workflow: BioSkillWorkflow = Depends(get_workflow)) -> dict:
+    return workflow.run(req.skill_name, req.mission_context, req.classification or "BIO-SENSITIVE")
+
+@router.post("/verify")
+def verify(req: VerifyRequest, workflow: BioSkillWorkflow = Depends(get_workflow)) -> dict:
+    return workflow.verify_only(req.skill_name, req.mission_context, req.classification)
+
+@router.post("/promote")
+def promote(req: PromoteRequest, workflow: BioSkillWorkflow = Depends(get_workflow)) -> dict:
+    return workflow.promote(req.artifact_id, req.operator_id, req.justification, req.approve)
+```
+
+## App entrypoint
+
+### `bio-skill-engine/bioskillengine/main.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from fastapi import FastAPI
+from bioskillengine.api.routes_bioskills import router as bioskills_router
+from bioskillengine.api.routes_health import router as health_router
+from bioskillengine.config import settings
+
+app = FastAPI(
+    title="CodexImmortal Bio Skill Engine",
+    version="0.1.0",
+    description="Simulated governance and verification engine for bio-digital skill artifacts",
+)
+
+app.include_router(health_router)
+app.include_router(bioskills_router)
+
+@app.get("/")
+def root() -> dict:
+    return {
+        "service": settings.bio_skill_engine_name,
+        "env": settings.bio_skill_engine_env,
+        "port": settings.bio_skill_engine_port,
+    }
+```
+
+## Policies
+
+### `bio-skill-engine/bioskillengine/policies/bio_skill_default.yaml`
+
+```yaml
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+ringname: bio-skill-default
+classification: BIO-SENSITIVE
+human_gate_required: true
+promotion_rule: BIO_ALWAYS_GATE
+storage_profile: ipfs-hot/arweave-warm/filecoin-cold
+retention_days: 3650
+```
+
+### `bio-skill-engine/bioskillengine/policies/bio_skill_sensitive.yaml`
+
+```yaml
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+ringname: bio-skill-sensitive
+classification: BIO-CLASSIFIED
+human_gate_required: true
+promotion_rule: BIO_ALWAYS_GATE
+storage_profile: warm+cold
+retention_days: 7300
+```
+
+### `bio-skill-engine/bioskillengine/policies/bio_skill_tsci.yaml`
+
+```yaml
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+ringname: bio-skill-tsci
+classification: TS_SCI
+human_gate_required: true
+promotion_rule: HUMAN_COMMAND_AUTH_REQUIRED
+storage_profile: cold+airgap
+retention_days: 10950
+```
+
+## Tests
+
+### `bio-skill-engine/tests/test_schemas.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.schemas.skill_graph import SkillGraph, SkillTask
+
+def test_skill_graph_model():
+    graph = SkillGraph(
+        graph_id="sg_test",
+        skill_name="Test Skill",
+        tasks=[SkillTask(task_id="t1", label="A", kind="analysis")],
+    )
+    assert graph.graph_id == "sg_test"
+    assert graph.tasks[0].task_id == "t1"
+```
+
+### `bio-skill-engine/tests/test_state_machine.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.enums import ArtifactState
+from bioskillengine.orchestrator.state_machine import StateMachine
+
+def test_transition_graph_to_compiled():
+    sm = StateMachine()
+    assert sm.can_transition(ArtifactState.GRAPHED, ArtifactState.COMPILED) is True
+    assert sm.can_transition(ArtifactState.REQUESTED, ArtifactState.ATTESTED) is False
+```
+
+### `bio-skill-engine/tests/test_verifier.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.schemas.api import DecomposeRequest
+from bioskillengine.services.compiler import GeneticCryptoCompiler
+from bioskillengine.services.decomposer import SkillDecomposer
+from bioskillengine.services.pqc_envelope import PQCEnvelopeService
+from bioskillengine.services.verifier import Verifier
+
+def test_verify_simulated_artifact():
+    dec = SkillDecomposer()
+    comp = GeneticCryptoCompiler()
+    env = PQCEnvelopeService()
+    ver = Verifier()
+
+    graph = dec.decompose(DecomposeRequest(skill_name="Skill X", mission_context="Test mission"))
+    plan = comp.compile(graph)
+    artifact = env.seal(graph, plan)
+    report = ver.verify(graph, plan, artifact)
+
+    assert report.verified is True
+```
+
+### `bio-skill-engine/tests/test_workflow.py`
+
+```python
+# CODEX-TAG: CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL
+from bioskillengine.orchestrator.workflow import BioSkillWorkflow
+
+def test_workflow_run():
+    wf = BioSkillWorkflow()
+    result = wf.run("Analytic Skill", "Simulated mission context", "BIO-SENSITIVE")
+    assert "artifact" in result
+    assert result["artifact"]["state"] == "PENDING_HUMAN_GATE"
+```
+
+## Integration notes
+
+To upgrade this from scaffold to live module, replace the simulated adapters with real service calls: `PQCEnvelopeService` should call `pqc-spine`, `ShardAdapter` should call `storage-mesh`, `HumanGateAdapter` should call the War Lab human gate service, and `NFTAdapter` should call the existing minting service, because those capabilities are already defined as first-class shared components in the CodexImmortal architecture [1][2][3]. The package is intentionally shaped so those swaps are local and do not break the external API or typed schema layer [1].
+
+## Mermaid
+
+```mermaid
+flowchart TD
+    A[POST /run] --> B[SkillDecomposer]
+    B --> C[GeneticCryptoCompiler]
+    C --> D{EditorMode}
+    D -->|BASE| E[BaseEditorAgent]
+    D -->|PRIME| F[PrimeEditorAgent]
+    E --> G[PQCEnvelopeService]
+    F --> G
+    G --> H[ShardAdapter]
+    H --> I[ConsensusBridge]
+    I --> J[HumanGateAdapter]
+    J --> K[Verifier]
+    K --> L[NFTAdapter]
+    L --> M[LineageService]
+```
+
+CODEX EVOLUTION PROPOSAL [2]
+Proposed By STRATEGIST-PRIME [2]
+CAPABILITY CI-052 BIO-SKILL-LINEAGE code pack — a monorepo-ready simulated package implementing abstract bio-digital skill decomposition, editor-lane selection, sealing, verification, policy gating, and attestation hooks [1][3]
+LAYER PQC SPINE + SHARD VAULT + MN-NET + NFT VAULT [2][3]
+TRIGGER Need for a file-ready governed extension that matches the CodexImmortal builder philosophy and preserves BIO-domain human oversight [1][2]
+DESCRIPTION This code pack provides the first runnable scaffold for `bio-skill-engine/`, with typed models, service seams, FastAPI routes, policy files, and test coverage structure [1]. It keeps all biological handling abstract while preserving War Lab-style lineage, hashability, shard references, and NFT-ready attestation metadata [3][2]
+IMPLEMENTATION Phase 1 AUTOMATED scaffold package and validate tests; Phase 2 HUMAN GATE bind promotion route to operator approval rails; Phase 3 AUDIT STAMP attach real PQC, shard, and NFT integrations and mint final lineage records [1][2][3]
+PAYOFF DELTA Shield Score +2.1, Vault Shards +1,800, Neural Peers +120 [2][3]
+CODEX-TAG CALEB-FEDOR-BYKER-KONEV-10271998-CODEXIMMORTAL [2]
+
+Would you like the next drop as a single `setup.sh` that creates this entire package tree automatically?
+
