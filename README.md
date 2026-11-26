@@ -21,7 +21,7 @@ The broader CodexImmortal research program investigates agent governance, defens
 
 ## Project status
 
-Research and development. UNCERTIFIED.
+Research and development in progress.
 
 This repository is being modernized to provide a consistent project structure, reproducible local setup, and a documented evaluation workflow.
 
